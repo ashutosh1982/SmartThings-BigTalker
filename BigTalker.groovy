@@ -1,5 +1,5 @@
 /**
- *  Big Talker  -- Version 1.0.2
+ *  Big Talker  -- Version 1.0.3-Alpha1
  *  Copyright 2014 brian@rayzurbock.com
  *  For the latest version and test releases visit http://www.github.com/rayzurbock
  *  Donations accepted via Paypal, but not required - rayzur@rayzurbock.com
@@ -15,8 +15,16 @@
  *
  * 
  */
+ 
+ /*
+ CHANGE LOG for 1.0.3
+   12/26/2014 - Acceleration (active/inactive) event added and tested
+   12/26/2014 - Water (wet/dry) event added, to be tested..., Need someone to test.
+   12/26/2014 - Smoke (detected/clear/tested) event added, to be tested (without burning a house down, please!)..., Need someone to test.
+   12/26/2014 - Button (press) event added, to be tested..., Need someone to test.
+ */
 definition(
-    name: "Big Talker",
+    name: "Big Talker Dev",
     namespace: "rayzurbock",
     author: "brian@rayzurbock.com",
     description: "Let's talk about mode changes, switches, motions, and so on.",
@@ -37,6 +45,10 @@ preferences {
     page(name: "pageConfigContact")
     page(name: "pageConfigMode")
     page(name: "pageConfigThermostat")
+	page(name: "pageConfigAcceleration")
+    page(name: "pageConfigWater")
+    page(name: "pageConfigSmoke")
+    page(name: "pageConfigButton")
 //End preferences
 }
 
@@ -533,6 +545,334 @@ def pageStatus(){
             enabledDevices = ""
         }
         //END STATUS CONFIG THERMOSTAT GROUP 1
+        
+        //BEGIN STATUS CONFIG ACCELERATION GROUP 1
+        if (settings.accelerationDeviceGroup1) {
+            enabledDevices += "Devices:  \n"
+            settings.accelerationDeviceGroup1.each() {
+                enabledDevices += "${it.displayName},"
+            }
+            enabledDevices += "\n\n"
+            if (settings.accelerationTalkOnActive1) {
+                enabledDevices += "Say when acceleration activated:\n ${settings.accelerationTalkOnActive1}\n"
+            }
+            if (settings.accelerationTalkOnInactive1) {
+                enabledDevices += "Say when acceleration stops:\n ${settings.accelerationTalkOnInactive1}\n"
+            }
+            if (settings.accelerationSpeechDevice1) {
+                enabledDevices += "Custom Speech Device(s):\n"
+                settings.accelerationSpeechDevice1.each() {
+                    enabledDevices += "Speech Device(s): ${it.displayName}\n"
+                }
+            }
+            if (!(enabledDevices == "")) {
+                section ("Acceleration Group 1:"){
+                    paragraph enabledDevices
+                }
+            }
+            enabledDevices = ""
+        }
+        //END STATUS CONFIG ACCELERATION GROUP 1
+        //BEGIN STATUS CONFIG ACCELERATION GROUP 2
+        if (settings.accelerationDeviceGroup2) {
+            enabledDevices += "Devices:  \n"
+            settings.accelerationDeviceGroup2.each() {
+                enabledDevices += "${it.displayName},"
+            }
+            enabledDevices += "\n\n"
+            if (settings.accelerationTalkOnActive2) {
+                enabledDevices += "Say when acceleration activated:\n ${settings.accelerationTalkOnActive2}\n"
+            }
+            if (settings.accelerationTalkOnInactive2) {
+                enabledDevices += "Say when acceleration stops:\n ${settings.accelerationTalkOnInactive2}\n"
+            }
+            if (settings.accelerationSpeechDevice2) {
+                enabledDevices += "Custom Speech Device(s):\n"
+                settings.accelerationSpeechDevice2.each() {
+                    enabledDevices += "Speech Device(s): ${it.displayName}\n"
+                }
+            }
+            if (!(enabledDevices == "")) {
+                section ("Acceleration Group 2:"){
+                    paragraph enabledDevices
+                }
+            }
+            enabledDevices = ""
+        }
+        //END STATUS CONFIG ACCELERATION GROUP 2
+        //BEGIN STATUS CONFIG ACCELERATION GROUP 3
+        if (settings.accelerationDeviceGroup3) {
+            enabledDevices += "Devices:  \n"
+            settings.accelerationDeviceGroup3.each() {
+                enabledDevices += "${it.displayName},"
+            }
+            enabledDevices += "\n\n"
+            if (settings.accelerationTalkOnActive3) {
+                enabledDevices += "Say when acceleration activated:\n ${settings.accelerationTalkOnActive3}\n"
+            }
+            if (settings.accelerationTalkOnInactive3) {
+                enabledDevices += "Say when acceleration stops:\n ${settings.accelerationTalkOnInactive3}\n"
+            }
+            if (settings.accelerationSpeechDevice3) {
+                enabledDevices += "Custom Speech Device(s):\n"
+                settings.accelerationSpeechDevice3.each() {
+                    enabledDevices += "Speech Device(s): ${it.displayName}\n"
+                }
+            }
+            if (!(enabledDevices == "")) {
+                section ("Acceleration Group 3:"){
+                    paragraph enabledDevices
+                }
+            }
+            enabledDevices = ""
+        }
+        //END STATUS CONFIG ACCELERATION GROUP 3
+        
+        //BEGIN STATUS CONFIG WATER GROUP 1
+        if (settings.waterDeviceGroup1) {
+            enabledDevices += "Devices:  \n"
+            settings.waterDeviceGroup1.each() {
+                enabledDevices += "${it.displayName},"
+            }
+            enabledDevices += "\n\n"
+            if (settings.waterTalkOnWet1) {
+                enabledDevices += "Say this when wet:\n ${settings.waterTalkOnWet1}\n"
+            }
+            if (settings.waterTalkOnWet1) {
+                enabledDevices += "Say this when dry:\n ${settings.waterTalkOnDry1}\n"
+            }
+            if (settings.waterSpeechDevice1) {
+                enabledDevices += "Custom Speech Device(s):\n"
+                settings.waterSpeechDevice1.each() {
+                    enabledDevices += "Speech Device(s): ${it.displayName}\n"
+                }
+            }
+            if (!(enabledDevices == "")) {
+                section ("Water Group 1:"){
+                    paragraph enabledDevices
+                }
+            }
+            enabledDevices = ""
+        }
+        //END STATUS CONFIG WATER GROUP 1
+        //BEGIN STATUS CONFIG WATER GROUP 2
+        if (settings.waterDeviceGroup2) {
+            enabledDevices += "Devices:  \n"
+            settings.waterDeviceGroup2.each() {
+                enabledDevices += "${it.displayName},"
+            }
+            enabledDevices += "\n\n"
+            if (settings.waterTalkOnWet2) {
+                enabledDevices += "Say this when wet:\n ${settings.waterTalkOnWet2}\n"
+            }
+            if (settings.waterTalkOnWet2) {
+                enabledDevices += "Say this when dry:\n ${settings.waterTalkOnDry2}\n"
+            }
+            if (settings.waterSpeechDevice2) {
+                enabledDevices += "Custom Speech Device(s):\n"
+                settings.waterSpeechDevice2.each() {
+                    enabledDevices += "Speech Device(s): ${it.displayName}\n"
+                }
+            }
+            if (!(enabledDevices == "")) {
+                section ("Water Group 2:"){
+                    paragraph enabledDevices
+                }
+            }
+            enabledDevices = ""
+        }
+        //END STATUS CONFIG WATER GROUP 2
+        //BEGIN STATUS CONFIG WATER GROUP 3
+        if (settings.waterDeviceGroup3) {
+            enabledDevices += "Devices:  \n"
+            settings.waterDeviceGroup3.each() {
+                enabledDevices += "${it.displayName},"
+            }
+            enabledDevices += "\n\n"
+            if (settings.waterTalkOnWet3) {
+                enabledDevices += "Say this when wet:\n ${settings.waterTalkOnWet3}\n"
+            }
+            if (settings.waterTalkOnWet3) {
+                enabledDevices += "Say this when dry:\n ${settings.waterTalkOnDry3}\n"
+            }
+            if (settings.waterSpeechDevice3) {
+                enabledDevices += "Custom Speech Device(s):\n"
+                settings.waterSpeechDevice3.each() {
+                    enabledDevices += "Speech Device(s): ${it.displayName}\n"
+                }
+            }
+            if (!(enabledDevices == "")) {
+                section ("Water Group 3:"){
+                    paragraph enabledDevices
+                }
+            }
+            enabledDevices = ""
+        }
+        //END STATUS CONFIG WATER GROUP 3
+        
+        //BEGIN STATUS CONFIG SMOKE GROUP 1
+        if (settings.smokeDeviceGroup1) {
+            enabledDevices += "Devices:  \n"
+            settings.smokeDeviceGroup1.each() {
+                enabledDevices += "${it.displayName},"
+            }
+            enabledDevices += "\n\n"
+            if (settings.smokeTalkOnDetect1) {
+                enabledDevices += "Say this when smoke detected:\n ${settings.smokeTalkOnDetect1}\n"
+            }
+            if (settings.smokeTalkOnClear1) {
+                enabledDevices += "Say this when smoke cleared:\n ${settings.smokeTalkOnClear1}\n"
+            }
+            if (settings.smokeTalkOnTest1) {
+                enabledDevices += "Say this when smoke tested:\n ${settings.smokeTalkOnTest1}\n"
+            }
+            if (settings.smokeSpeechDevice1) {
+                enabledDevices += "Custom Speech Device(s):\n"
+                settings.smokeSpeechDevice1.each() {
+                    enabledDevices += "Speech Device(s): ${it.displayName}\n"
+                }
+            }
+            if (!(enabledDevices == "")) {
+                section ("Smoke Group 1:"){
+                    paragraph enabledDevices
+                }
+            }
+            enabledDevices = ""
+        }
+        //END STATUS CONFIG SMOKE GROUP 1
+        //BEGIN STATUS CONFIG SMOKE GROUP 2
+        if (settings.smokeDeviceGroup2) {
+            enabledDevices += "Devices:  \n"
+            settings.smokeDeviceGroup2.each() {
+                enabledDevices += "${it.displayName},"
+            }
+            enabledDevices += "\n\n"
+            if (settings.smokeTalkOnDetect2) {
+                enabledDevices += "Say this when smoke detected:\n ${settings.smokeTalkOnDetect2}\n"
+            }
+            if (settings.smokeTalkOnClear2) {
+                enabledDevices += "Say this when smoke cleared:\n ${settings.smokeTalkOnClear2}\n"
+            }
+            if (settings.smokeTalkOnTest2) {
+                enabledDevices += "Say this when smoke tested:\n ${settings.smokeTalkOnTest2}\n"
+            }
+            if (settings.smokeSpeechDevice2) {
+                enabledDevices += "Custom Speech Device(s):\n"
+                settings.smokeSpeechDevice2.each() {
+                    enabledDevices += "Speech Device(s): ${it.displayName}\n"
+                }
+            }
+            if (!(enabledDevices == "")) {
+                section ("Smoke Group 2:"){
+                    paragraph enabledDevices
+                }
+            }
+            enabledDevices = ""
+        }
+        //END STATUS CONFIG SMOKE GROUP 2
+        //BEGIN STATUS CONFIG SMOKE GROUP 3
+        if (settings.smokeDeviceGroup3) {
+            enabledDevices += "Devices:  \n"
+            settings.smokeDeviceGroup3.each() {
+                enabledDevices += "${it.displayName},"
+            }
+            enabledDevices += "\n\n"
+            if (settings.smokeTalkOnDetect3) {
+                enabledDevices += "Say this when smoke detected:\n ${settings.smokeTalkOnDetect3}\n"
+            }
+            if (settings.smokeTalkOnClear3) {
+                enabledDevices += "Say this when smoke cleared:\n ${settings.smokeTalkOnClear3}\n"
+            }
+            if (settings.smokeTalkOnTest3) {
+                enabledDevices += "Say this when smoke tested:\n ${settings.smokeTalkOnTest3}\n"
+            }
+            if (settings.smokeSpeechDevice3) {
+                enabledDevices += "Custom Speech Device(s):\n"
+                settings.smokeSpeechDevice3.each() {
+                    enabledDevices += "Speech Device(s): ${it.displayName}\n"
+                }
+            }
+            if (!(enabledDevices == "")) {
+                section ("Smoke Group 3:"){
+                    paragraph enabledDevices
+                }
+            }
+            enabledDevices = ""
+        }
+        //END STATUS CONFIG SMOKE GROUP 3
+        
+        //BEGIN STATUS CONFIG BUTTON GROUP 1
+        if (settings.buttonDeviceGroup1) {
+            enabledDevices += "Devices:  \n"
+            settings.buttonDeviceGroup1.each() {
+                enabledDevices += "${it.displayName},"
+            }
+            enabledDevices += "\n\n"
+            if (settings.buttonTalkOnDetect1) {
+                enabledDevices += "Say this when button pressed:\n ${settings.buttonTalkOnPress1}\n"
+            }
+            if (settings.buttonSpeechDevice1) {
+                enabledDevices += "Custom Speech Device(s):\n"
+                settings.buttonSpeechDevice1.each() {
+                    enabledDevices += "Speech Device(s): ${it.displayName}\n"
+                }
+            }
+            if (!(enabledDevices == "")) {
+                section ("Button Group 1:"){
+                    paragraph enabledDevices
+                }
+            }
+            enabledDevices = ""
+        }
+        //END STATUS CONFIG BUTTON GROUP 1
+        //BEGIN STATUS CONFIG BUTTON GROUP 2
+        if (settings.buttonDeviceGroup2) {
+            enabledDevices += "Devices:  \n"
+            settings.buttonDeviceGroup2.each() {
+                enabledDevices += "${it.displayName},"
+            }
+            enabledDevices += "\n\n"
+            if (settings.buttonTalkOnDetect2) {
+                enabledDevices += "Say this when button pressed:\n ${settings.buttonTalkOnPress2}\n"
+            }
+            if (settings.buttonSpeechDevice2) {
+                enabledDevices += "Custom Speech Device(s):\n"
+                settings.buttonSpeechDevice2.each() {
+                    enabledDevices += "Speech Device(s): ${it.displayName}\n"
+                }
+            }
+            if (!(enabledDevices == "")) {
+                section ("Button Group 2:"){
+                    paragraph enabledDevices
+                }
+            }
+            enabledDevices = ""
+        }
+        //END STATUS CONFIG BUTTON GROUP 2
+        //BEGIN STATUS CONFIG BUTTON GROUP 3
+        if (settings.buttonDeviceGroup3) {
+            enabledDevices += "Devices:  \n"
+            settings.buttonDeviceGroup3.each() {
+                enabledDevices += "${it.displayName},"
+            }
+            enabledDevices += "\n\n"
+            if (settings.buttonTalkOnDetect3) {
+                enabledDevices += "Say this when button pressed:\n ${settings.buttonTalkOnPress3}\n"
+            }
+            if (settings.buttonSpeechDevice3) {
+                enabledDevices += "Custom Speech Device(s):\n"
+                settings.buttonSpeechDevice3.each() {
+                    enabledDevices += "Speech Device(s): ${it.displayName}\n"
+                }
+            }
+            if (!(enabledDevices == "")) {
+                section ("Button Group 3:"){
+                    paragraph enabledDevices
+                }
+            }
+            enabledDevices = ""
+        }
+        //END STATUS CONFIG BUTTON GROUP 3
     }
 }
 
@@ -551,6 +891,10 @@ def pageConfigure(){
             href "pageConfigContact", title:"Contact", description:"Tap to configure"
             href "pageConfigMode", title:"Mode", description:"Tap to configure"
             href "pageConfigThermostat", title:"Thermostat", description:"Tap to configure"
+            href "pageConfigAcceleration", title: "Acceleration", description:"Tap to configure"
+            href "pageConfigWater", title: "Water", description:"Tap to configure"
+            href "pageConfigSmoke", title: "Smoke", description:"Tap to configure"
+            href "pageConfigButton", title: "Button", description:"Tap to configure"
         }
 //        section([mobileOnly:true]){
 //            label title: "SmartApp Name (Front Door Left Open)", required: true
@@ -719,6 +1063,102 @@ def pageConfigThermostat(){
 //End pageConfigContact()
 }
 
+def pageConfigAcceleration(){
+    dynamicPage(name: "pageConfigAcceleration", title: "Configure talk on acceleration", install: false, uninstall: false) {
+        section("Acceleration Group 1"){
+            input name: "accelerationDeviceGroup1", type: "capability.accelerationSensor", title: "Acceleration sensor(s)", required: false, multiple: true
+            input name: "accelerationTalkOnActive1", type: "text", title: "Say this when activated:", required: false, defaultValue: "%devicename% acceleration %devicechange%"
+            input name: "accelerationTalkOnInactive1", type: "text", title: "Say this when inactivated:", required: false, defaultValue: "%devicename% acceleration is no longer active"
+            input name: "accelerationSpeechDevice1", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+        }
+        section("Acceleration Group 2"){
+            input name: "accelerationDeviceGroup2", type: "capability.accelerationSensor", title: "Acceleration sensor(s)", required: false, multiple: true
+            input name: "accelerationTalkOnActive2", type: "text", title: "Say this when activated:", required: false
+            input name: "accelerationTalkOnInactive2", type: "text", title: "Say this when inactivated:", required: false
+            input name: "accelerationSpeechDevice2", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+        }
+        section("Acceleration Group 3"){
+            input name: "accelerationDeviceGroup3", type: "capability.accelerationSensor", title: "Acceleration sensor(s)", required: false, multiple: true
+            input name: "accelerationTalkOnActive3", type: "text", title: "Say this when activated:", required: false
+            input name: "accelerationTalkOnInactive3", type: "text", title: "Say this when inactivated:", required: false
+            input name: "accelerationSpeechDevice3", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+        }
+    }
+//End pageConfigAcceleration()
+}
+
+def pageConfigWater(){
+    dynamicPage(name: "pageConfigWater", title: "Configure talk on water", install: false, uninstall: false) {
+        section("Water Group 1"){
+            input name: "waterDeviceGroup1", type: "capability.waterSensor", title: "Water sensor(s)", required: false, multiple: true
+            input name: "waterTalkOnWet1", type: "text", title: "Say this when wet:", required: false, defaultValue: "%devicename% is now %devicechange%"
+            input name: "waterTalkOnDry1", type: "text", title: "Say this when dry:", required: false, defaultValue: "%devicename% is now %devicechange%"
+            input name: "waterSpeechDevice1", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+        }
+        section("Water Group 2"){
+            input name: "waterDeviceGroup2", type: "capability.waterSensor", title: "Water sensor(s)", required: false, multiple: true
+            input name: "waterTalkOnWet2", type: "text", title: "Say this when wet:", required: false
+            input name: "waterTalkOnDry2", type: "text", title: "Say this when dry:", required: false
+            input name: "waterSpeechDevice2", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+        }
+        section("Water Group 3"){
+            input name: "waterDeviceGroup3", type: "capability.waterSensor", title: "Water sensor(s)", required: false, multiple: true
+            input name: "waterTalkOnWet3", type: "text", title: "Say this when wet:", required: false
+            input name: "waterTalkOnDry3", type: "text", title: "Say this when dry:", required: false
+            input name: "waterSpeechDevice3", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+        }
+    }
+//End pageConfigWater()
+}
+
+def pageConfigSmoke(){
+    dynamicPage(name: "pageConfigSmoke", title: "Configure talk on smoke", install: false, uninstall: false) {
+        section("Smoke Group 1"){
+            input name: "smokeDeviceGroup1", type: "capability.smokeDetector", title: "Smoke detector(s)", required: false, multiple: true
+            input name: "smokeTalkOnDetect1", type: "text", title: "Say this when detected:", required: false, defaultValue: "Smoke, %devicename% has detected smoke"
+            input name: "smokeTalkOnClear1", type: "text", title: "Say this when cleared:", required: false, defaultValue: "Smoke, %devicename% has cleared smoke alert"
+            input name: "smokeTalkOnTest1", type: "text", title: "Say this when tested:", required: false, defaultValue: "Smoke, %devicename% has been tested"
+            input name: "smokeSpeechDevice1", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+        }
+        section("Smoke Group 2"){
+            input name: "smokeDeviceGroup2", type: "capability.smokeDetector", title: "Smoke detector(s)", required: false, multiple: true
+            input name: "smokeTalkOnDetect2", type: "text", title: "Say this when detected:", required: false
+            input name: "smokeTalkOnClear2", type: "text", title: "Say this when cleared:", required: false
+            input name: "smokeTalkOnTest2", type: "text", title: "Say this when tested:", required: false
+            input name: "smokeSpeechDevice2", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+        }
+        section("Smoke Group 3"){
+            input name: "smokeDeviceGroup3", type: "capability.smokeDetector", title: "Smoke detector(s)", required: false, multiple: true
+            input name: "smokeTalkOnDetect3", type: "text", title: "Say this when detected:", required: false
+            input name: "smokeTalkOnClear3", type: "text", title: "Say this when cleared:", required: false
+            input name: "smokeTalkOnTest3", type: "text", title: "Say this when tested:", required: false
+            input name: "smokeSpeechDevice3", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+        }
+    }
+//End pageConfigSmoke()
+}
+
+def pageConfigButton(){
+    dynamicPage(name: "pageConfigButton", title: "Configure talk on button press", install: false, uninstall: false) {
+        section("Button Group 1"){
+            input name: "buttonDeviceGroup1", type: "capability.button", title: "Button(s)", required: false, multiple: true
+            input name: "buttonTalkOnPress1", type: "text", title: "Say this when pressed:", required: false, defaultValue: "%devicename% button pressed"
+            input name: "buttonSpeechDevice1", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+        }
+        section("Button Group 2"){
+            input name: "buttonDeviceGroup2", type: "capability.button", title: "Button(s)", required: false, multiple: true
+            input name: "buttonTalkOnPress2", type: "text", title: "Say this when pressed:", required: false
+            input name: "buttonSpeechDevice2", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+        }
+        section("Button Group 3"){
+            input name: "buttonDeviceGroup3", type: "capability.button", title: "Button(s)", required: false, multiple: true
+            input name: "buttonTalkOnPress3", type: "text", title: "Say this when pressed:", required: false
+            input name: "buttonSpeechDevice3", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+        }
+    }
+//End pageConfigSmoke()
+}
+
 def installed() {
 	state.installed = true
     LOGTRACE("Installed with settings: ${settings}")
@@ -761,6 +1201,22 @@ def initialize() {
     if (thermostatDeviceGroup1) { subscribe(thermostatDeviceGroup1, "thermostatOperatingState", onThermostat1Event) }
     if (thermostatDeviceGroup2) { subscribe(thermostatDeviceGroup2, "thermostatOperatingState", onThermostat2Event) }
     if (thermostatDeviceGroup3) { subscribe(thermostatDeviceGroup3, "thermostatOperatingState", onThermostat3Event) }
+    //Subscribe Acceleration
+    if (accelerationDeviceGroup1) { subscribe(accelerationDeviceGroup1, "acceleration", onAcceleration1Event) }
+    if (accelerationDeviceGroup2) { subscribe(accelerationDeviceGroup2, "acceleration", onAcceleration2Event) }
+    if (accelerationDeviceGroup3) { subscribe(accelerationDeviceGroup3, "acceleration", onAcceleration3Event) }
+    //Subscribe Water
+    if (waterDeviceGroup1) { subscribe(waterDeviceGroup1, "water", onWater1Event) }
+    if (waterDeviceGroup2) { subscribe(waterDeviceGroup2, "water", onWater2Event) }
+    if (waterDeviceGroup3) { subscribe(waterDeviceGroup3, "water", onWater3Event) }
+    //Subscribe Smoke
+    if (smokeDeviceGroup1) { subscribe(smokeDeviceGroup1, "smoke", onSmoke1Event) }
+    if (smokeDeviceGroup2) { subscribe(smokeDeviceGroup2, "smoke", onSmoke2Event) }
+    if (smokeDeviceGroup3) { subscribe(smokeDeviceGroup3, "smoke", onSmoke3Event) }
+    //Subscribe Button
+    if (buttonDeviceGroup1) { subscribe(buttonDeviceGroup1, "button", onButton1Event) }
+    if (buttonDeviceGroup2) { subscribe(buttonDeviceGroup2, "button", onButton2Event) }
+    if (buttonDeviceGroup3) { subscribe(buttonDeviceGroup3, "button", onButton3Event) }
     //Subscribe Mode
     if (modePhraseGroup1) { subscribe(location, onModeChangeEvent) }
     state.lastMode = location.mode
@@ -995,6 +1451,132 @@ def processThermostatEvent(index, evt){
 }
 //END HANDLE THERMOSTAT
 
+//BEGIN HANDLE ACCELERATION
+def onAcceleration1Event(evt){
+    processAccelerationEvent(1, evt)
+}
+def onAcceleration2Event(evt){
+    processAccelerationEvent(2, evt)
+}
+def onAcceleration3Event(evt){
+    processAccelerationEvent(3, evt)
+}
+
+def processAccelerationEvent(index, evt){
+    LOGDEBUG("(onAccelerationEvent): ${evt.name}, ${index}, ${evt.value}")
+    state.TalkPhrase = null
+    state.speechDevice = null
+    if (evt.value == "active") {
+        if (index == 1) { state.TalkPhrase = settings.accelerationTalkOnActive1; state.speechDevice = accelerationSpeechDevice1}
+        if (index == 2) { state.TalkPhrase = settings.accelerationTalkOnActive2; state.speechDevice = accelerationSpeechDevice2}
+        if (index == 3) { state.TalkPhrase = settings.accelerationTalkOnActive3; state.speechDevice = accelerationSpeechDevice3}
+        Talk(state.TalkPhrase, state.speechDevice, evt)
+    }
+    if (evt.value == "inactive") {
+        if (index == 1) { state.TalkPhrase = settings.accelerationTalkOnInactive1; state.speechDevice = accelerationSpeechDevice1}
+        if (index == 2) { state.TalkPhrase = settings.accelerationTalkOnInactive2; state.speechDevice = accelerationSpeechDevice2}
+        if (index == 3) { state.TalkPhrase = settings.accelerationTalkOnInactive3; state.speechDevice = accelerationSpeechDevice3}
+        Talk(state.TalkPhrase, state.speechDevice, evt)
+    }
+    state.TalkPhrase = null
+    state.speechDevice = null
+}
+//END HANDLE ACCELERATION
+
+//BEGIN HANDLE WATER
+def onWater1Event(evt){
+    processWaterEvent(1, evt)
+}
+def onWater2Event(evt){
+    processWaterEvent(2, evt)
+}
+def onWater3Event(evt){
+    processWaterEvent(3, evt)
+}
+
+def processWaterEvent(index, evt){
+    LOGDEBUG("(onWaterEvent): ${evt.name}, ${index}, ${evt.value}")
+    state.TalkPhrase = null
+    state.speechDevice = null
+    if (evt.value == "wet") {
+        if (index == 1) { state.TalkPhrase = settings.waterTalkOnWet1; state.speechDevice = waterSpeechDevice1}
+        if (index == 2) { state.TalkPhrase = settings.waterTalkOnWet2; state.speechDevice = waterSpeechDevice2}
+        if (index == 3) { state.TalkPhrase = settings.waterTalkOnWet3; state.speechDevice = waterSpeechDevice3}
+        Talk(state.TalkPhrase, state.speechDevice, evt)
+    }
+    if (evt.value == "dry") {
+        if (index == 1) { state.TalkPhrase = settings.waterTalkOnDry1; state.speechDevice = waterSpeechDevice1}
+        if (index == 2) { state.TalkPhrase = settings.waterTalkOnDry2; state.speechDevice = waterSpeechDevice2}
+        if (index == 3) { state.TalkPhrase = settings.waterTalkOnDry3; state.speechDevice = waterSpeechDevice3}
+        Talk(state.TalkPhrase, state.speechDevice, evt)
+    }
+    state.TalkPhrase = null
+    state.speechDevice = null
+}
+//END HANDLE WATER
+
+//BEGIN HANDLE SMOKE
+def onSmoke1Event(evt){
+    processSmokeEvent(1, evt)
+}
+def onSmoke2Event(evt){
+    processSmokeEvent(2, evt)
+}
+def onSmoke3Event(evt){
+    processSmokeEvent(3, evt)
+}
+
+def processSmokeEvent(index, evt){
+    LOGDEBUG("(onSmokeEvent): ${evt.name}, ${index}, ${evt.value}")
+    state.TalkPhrase = null
+    state.speechDevice = null
+    if (evt.value == "detected") {
+        if (index == 1) { state.TalkPhrase = settings.smokeTalkOnDetect1; state.speechDevice = smokeSpeechDevice1}
+        if (index == 2) { state.TalkPhrase = settings.smokeTalkOnDetect2; state.speechDevice = smokeSpeechDevice2}
+        if (index == 3) { state.TalkPhrase = settings.smokeTalkOnDetect3; state.speechDevice = smokeSpeechDevice3}
+        Talk(state.TalkPhrase, state.speechDevice, evt)
+    }
+    if (evt.value == "clear") {
+        if (index == 1) { state.TalkPhrase = settings.smokeTalkOnClear1; state.speechDevice = smokeSpeechDevice1}
+        if (index == 2) { state.TalkPhrase = settings.smokeTalkOnClear2; state.speechDevice = smokeSpeechDevice2}
+        if (index == 3) { state.TalkPhrase = settings.smokeTalkOnClear3; state.speechDevice = smokeSpeechDevice3}
+        Talk(state.TalkPhrase, state.speechDevice, evt)
+    }
+    if (evt.value == "tested") {
+        if (index == 1) { state.TalkPhrase = settings.smokeTalkOnTest1; state.speechDevice = smokeSpeechDevice1}
+        if (index == 2) { state.TalkPhrase = settings.smokeTalkOnTest2; state.speechDevice = smokeSpeechDevice2}
+        if (index == 3) { state.TalkPhrase = settings.smokeTalkOnTest3; state.speechDevice = smokeSpeechDevice3}
+        Talk(state.TalkPhrase, state.speechDevice, evt)
+    }
+    state.TalkPhrase = null
+    state.speechDevice = null
+}
+//END HANDLE SMOKE
+
+//BEGIN HANDLE BUTTON
+def onButton1Event(evt){
+    processButtonEvent(1, evt)
+}
+def onButton2Event(evt){
+    processButtonEvent(2, evt)
+}
+def onButton3Event(evt){
+    processButtonEvent(3, evt)
+}
+
+def processButtonEvent(index, evt){
+    LOGDEBUG("(onButtonEvent): ${evt.name}, ${index}, ${evt.value}")
+    state.TalkPhrase = null
+    state.speechDevice = null
+    if (index == 1) { state.TalkPhrase = settings.buttonTalkOnPress1; state.speechDevice = buttonSpeechDevice1}
+    if (index == 2) { state.TalkPhrase = settings.buttonTalkOnPress2; state.speechDevice = buttonSpeechDevice2}
+    if (index == 3) { state.TalkPhrase = settings.buttonTalkOnPress3; state.speechDevice = buttonSpeechDevice3}
+    Talk(state.TalkPhrase, state.speechDevice, evt)
+    state.TalkPhrase = null
+    state.speechDevice = null
+}
+//END HANDLE BUTTON
+
 def processPhraseVariables(phrase, evt){
     phrase = phrase.replace('%devicename%', evt.displayName)  //User given name of the device
     phrase = phrase.replace('%devicetype%', evt.name)  //Device type: motion, switch, etc...
@@ -1055,5 +1637,5 @@ def LOGTRACE(txt){
     log.trace("BIGTALKER | ${txt}")
 }
 def setAppVersion(){
-    state.appversion = "1.0.2"
+    state.appversion = "1.0.3-Alpha1"
 }
