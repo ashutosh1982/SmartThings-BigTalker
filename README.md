@@ -12,7 +12,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 #Description
 Big Talker is a SmartApp that can make your house talk depending on various triggered events. <br />
 Pair with any SmartThings compatible speech synthesis audio device such as Sonos, VLC Thing on your computer or Raspberry Pi! <br />
-Version: 1.0.2-Ubi-Beta1
+Version: 1.0.2-Ubi-Beta2
 
 #Installation
 1. Login at <a href=http://graph.api.smartthings.com>http://graph.api.smartthings.com</a>
