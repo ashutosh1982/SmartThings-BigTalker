@@ -32,6 +32,7 @@ Version: 1.0.2-Ubi-Beta1
 *  12/17/2014 - 1.0.1 - Sonos Support corrected. Resume playback after speaking (not supported for VLC-Thing until the Device Type supports it), Corrected custom speech device save for Switch events, general cleanup.  More event support to come in new releases soon. Special thanks to SmartThings community member Greg for help with testing Sonos functionality and making this release possible.
 *  12/26/2014 - 1.0.2 - Corrected bug where Sonos would show up to be selected as a default speech device, but not as a custom speech device for each device/event group.
 *  12/26/2014 - 1.0.2-Ubi-Beta1 - Modified to use speechSynthesis and it.speak() in order for users to test Ubi support. Note: This version will not work with Sonos.  For Sonos support, use 1.0.2 (not 1.0.2-Ubi-Beta1).
+*  12/26/2014 - 1.0.2-Ubi-Beta2 - Enabled debug logging, added additional debug logs, corrected formatting
 
 # More Details
 Have you ever wanted a talking house? Now you can! With my Big Talker SmartApp ( http://github.com/rayzurbock/SmartThings-BigTalker )
