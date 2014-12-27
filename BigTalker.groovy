@@ -1,7 +1,7 @@
 /**
  *  NOTICE: DEV/TESTING BRANCH -- Under development / testing for specific features
  * 
- *  Big Talker  -- Version 1.0.2-Ubi-Beta1
+ *  Big Talker  -- Version 1.0.2-Ubi-Beta2
  *  Copyright 2014 brian@rayzurbock.com
  *  For the latest version and test releases visit http://www.github.com/rayzurbock
  *  Donations accepted via Paypal, but not required - rayzur@rayzurbock.com
@@ -1026,28 +1026,32 @@ def Talk(phrase, customSpeechDevice, evt){
             LOGDEBUG("${it.displayName} | Volume: ${currentVolume}")
             if (!(currentTrack == null)){
                 //currentTrack has data
-                LOGTRACE("${it.displayName} | Current Status: ${currentStatus}, CurrentTrack: ${currentTrack}, CurrentTrack.Status: ${currentTrack.status}.")
+                LOGDEBUG("${it.displayName} | Current Status: ${currentStatus}, CurrentTrack: ${currentTrack}, CurrentTrack.Status: ${currentTrack.status}.")
                 if (currentTrack.status == 'playing') {
-                    LOGTRACE("${it.displayName} | Resuming play. Sending playTextAndResume().")
+                    //LOGTRACE("${it.displayName} | Resuming play. Sending playTextAndResume().")
                     //it.playTextAndResume(phrase)
-					it.speak(phrase)
+                    LOGDEBUG("${it.displayName} | 1 | Sending speak().")
+		    it.speak(phrase)
                 } else
                 {
-                    LOGDEBUG("${it.displayName} | Nothing playing. Sending playTextAndResume()")
+                    //LOGDEBUG("${it.displayName} | Nothing playing. Sending playTextAndResume()")
                     //it.playTextAndResume(phrase) //Let's just call playTextAndResume() anyway
-					it.speak(phrase)
+                    LOGDEBUG("${it.displayName} | 2 | Sending speak().")
+		    it.speak(phrase)
                 }
             } else {
                 //currentTrack doesn't have data or is not supported on this device
                 if (currentStatus == "disconnected") {
                     //VLCThing?
-                    LOGTRACE("${it.displayName} | VLCThing? | Current Status: ${currentStatus}.")
+                    //LOGTRACE("${it.displayName} | VLCThing? | Current Status: ${currentStatus}.")
                     //it.playText(phrase) //VLCThing speaks only part of the phrase if using playTextAndResume() or playTextAndRestore 12/15/2014
-					it.speak(phrase)
+                    LOGDEBUG("${it.displayName} | 3 | Sending speak().")
+		    it.speak(phrase)
                 } else {
-                    LOGTRACE("${it.displayName} | Current Status: ${currentStatus}. Sending playTextAndRestore().")
+                    //LOGTRACE("${it.displayName} | Current Status: ${currentStatus}. Sending playTextAndRestore().")
                     //it.playTextAndResume(phrase) //Let's just call playTextAndRestore() anyway
-					it.speak(phrase)
+                    LOGDEBUG("${it.displayName} | 4 | Sending speak().")
+		    it.speak(phrase)
                 }
             }
         }
@@ -1055,11 +1059,11 @@ def Talk(phrase, customSpeechDevice, evt){
 }
 
 def LOGDEBUG(txt){
-    // log.debug("BIGTALKER | ${txt}")
+    log.debug("BIGTALKER | ${txt}")
 }
 def LOGTRACE(txt){
     log.trace("BIGTALKER | ${txt}")
 }
 def setAppVersion(){
-    state.appversion = "1.0.2-Ubi-Beta1"
+    state.appversion = "1.0.2-Ubi-Beta2"
 }
