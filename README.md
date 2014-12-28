@@ -1,18 +1,25 @@
 SmartThings-BigTalker
 =====================
-#License
-Copyright (c) 2014 Brian S. Lowrance (brian@rayzurbock.com) <br />
-Donations accepted via Paypal, but not required - rayzur@rayzurbock.com
-
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at:
-
-http://www.apache.org/licenses/LICENSE-2.0
-Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-
 #Description
-Big Talker is a SmartApp that can make your house talk depending on various triggered events. <br />
-Pair with any SmartThings compatible speech synthesis audio device such as Sonos, VLC Thing on your computer or Raspberry Pi! <br />
-Version: 1.0.3-Alpha4
+ Big Talker is a SmartApp for SmartThings that can make your house talk depending on various triggered events. <br />
+ Pair with any SmartThings compatible audio device such as Sonos, VLC Thing on your computer or Raspberry Pi! See <b>More Details</b> section below for more features.<br />
+ Version: 1.0.3-Alpha4 <br />
+ <br />
+ 
+#Support the project
+ This SmartApp is free. Donations to support development efforts are accepted via:
+ * PayPal to: rayzur at rayzurbock.com
+ * Link: <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WKB9N9MPUGTZS'>PayPal Donation (for supporters with or without a Paypal account)</a>
+ * Link: <a href='https://squareup.com/market/brian-lowrance#category-a58f6ff3-7380-471b-8432-7e5881654e2c'>Square Marketplace</a>
+
+#License
+ **BIG TALKER -- A SmartApp for SmartThings Home Automation System** <br />
+ Copyright 2014 - rayzur at rayzurbock.com - Brian S. Lowrance <br />
+ For the latest version, development and test releases visit http://www.github.com/rayzurbock <br />
+ <br />
+ Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the  License. You may obtain a copy of the License at: <br/>
+ <br />
+ http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License. <br/>
 
 #Installation
 1. Login at <a href=http://graph.api.smartthings.com>http://graph.api.smartthings.com</a>
@@ -27,31 +34,10 @@ Version: 1.0.3-Alpha4
 10. "BigTalker" app should be available in the list of SmartApps that appears below the menu ribbon. Tap it.
 11. Tap Configure to start setting up your talking events.  Setup as many or as few as you like.
 
-# Revision History
-*  12/13/2014 - 1.0.0 - Initial Release
-*  12/17/2014 - 1.0.1 - Sonos Support corrected. Resume playback after speaking (not supported for VLC-Thing until the Device Type supports it), Corrected custom speech device save for Switch events, general cleanup.  More event support to come in new releases soon. Special thanks to SmartThings community member Greg for help with testing Sonos functionality and making this release possible.
-*  12/26/2014 - 1.0.2 - Corrected bug where Sonos would show up to be selected as a default speech device, but not as a custom speech device for each device/event group.
-*  12/26/2014 - 1.0.3-Alpha1
-  * New sensor event handlers
-    * Acceleration (active/inactive) event added and tested
-    * Water (wet/dry) event added, to be tested..., Need someone to test.
-    * Smoke (detected/clear/tested) event added, to be tested (without burning a house down, please!)..., Need someone to test.
-    * Button (press) event added, to be tested..., Need someone to test.
-*  12/27/2014 - 1.0.3-Alpha2
-  * Water tested, thanks SmartThingsCommunity:Greg 
-  * Smoke tested, thanks SmartThingsCommunity:Greg 
-  * Adjusted some debug/trace log info
-  * Added default "talk while in mode(s)" with custom mode overrides for each event group.
-  * Status page: add defaults, cleanup look
-*  12/27/2014 - 1.0.3-Alpha3
-  *  Added Volume Change (supported for Sonos, VLC-Thing, not supported for Ubi due to lack of support in it's device type)
-*  12/27/2014 - 1.0.3-Alpha4
-  *  Corrected small bug on status page that was introduced in 1.0.3-Alpha3
-
 # More Details
 Have you ever wanted a talking house? Now you can! With my Big Talker SmartApp ( http://github.com/rayzurbock/SmartThings-BigTalker )
 
-When SmartThings is paired with a speech synthesis device (such as a Sonos or VLC Thing ( http://community.smartthings.com/t/vlc-thing-a-poor-mans-sonos/5433 )) and my Big Talker SmartApp, your house can say what you want it to say when events occur.
+When SmartThings is paired with a compatible audio device (such as a Sonos or VLC Thing ( http://community.smartthings.com/t/vlc-thing-a-poor-mans-sonos/5433 )) and my Big Talker SmartApp, your house can say what you want it to say when events occur.
 
 Currently supported events:
 
@@ -84,3 +70,25 @@ I have a virtual switch that turns on/off all of my Christmas tree's and interio
 Keep in mind, if you configure highly active or too many devices, it may get annoying!! We had a family gathering tonight and the kids kept going in/out the back door to play in the yard. "Back Door has been opened, Back Door has been closed, Back Door has been opened, you get the idea." I wouldn't configure chatty motion sensors either, but that's up to you.
 
 Have Fun!
+
+<hr>
+# Revision History
+*  12/13/2014 - 1.0.0 - Initial Release
+*  12/17/2014 - 1.0.1 - Sonos Support corrected. Resume playback after speaking (not supported for VLC-Thing until the Device Type supports it), Corrected custom speech device save for Switch events, general cleanup.  More event support to come in new releases soon. Special thanks to SmartThings community member Greg for help with testing Sonos functionality and making this release possible.
+*  12/26/2014 - 1.0.2 - Corrected bug where Sonos would show up to be selected as a default speech device, but not as a custom speech device for each device/event group.
+*  12/26/2014 - 1.0.3-Alpha1
+  * New sensor event handlers
+    * Acceleration (active/inactive) event added and tested
+    * Water (wet/dry) event added, to be tested..., Need someone to test.
+    * Smoke (detected/clear/tested) event added, to be tested (without burning a house down, please!)..., Need someone to test.
+    * Button (press) event added, to be tested..., Need someone to test.
+*  12/27/2014 - 1.0.3-Alpha2
+  * Water tested, thanks SmartThingsCommunity:Greg 
+  * Smoke tested, thanks SmartThingsCommunity:Greg 
+  * Adjusted some debug/trace log info
+  * Added default "talk while in mode(s)" with custom mode overrides for each event group.
+  * Status page: add defaults, cleanup look
+*  12/27/2014 - 1.0.3-Alpha3
+  *  Added Volume Change (supported for Sonos, VLC-Thing, not supported for Ubi due to lack of support in it's device type)
+*  12/27/2014 - 1.0.3-Alpha4
+  *  Corrected small bug on status page that was introduced in 1.0.3-Alpha3
