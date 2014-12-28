@@ -1,5 +1,5 @@
 /**
- *  Big Talker  -- Version 1.0.3-Alpha2
+ *  Big Talker  -- Version 1.0.3-Alpha3
  *  Copyright 2014 brian@rayzurbock.com
  *  For the latest version and test releases visit http://www.github.com/rayzurbock
  *  This app is free. Donations to support development efforts are accepted via Paypal at: rayzur@rayzurbock.com
@@ -26,6 +26,8 @@ CHANGE LOG for 1.0.3-Alpha2
    12/27/2014 - Adjusted some debug/trace log info
    12/27/2014 - Added default "talk while in mode(s)" with custom mode overrides for each event group.
    12/27/2014 - Status page: add defaults, cleanup look
+CHANGE LOG for 1.0.3-Alpha3   
+   12/27/2014 - Added Volume Change (supported for Sonos, VLC-Thing, not supported for Ubi due to lack of support in it's device type)
  */
 definition(
     name: "Big Talker Dev",
@@ -87,7 +89,10 @@ def pageStatus(){
         settings.speechDeviceDefault.each(){
             enabledDevices += "${it.displayName},"
         }
-        enabledDevices += "\n"
+        enabledDevices += "\n\n"
+        if (settings.speechVolume) {
+            enabledDevices += "Adjust Volume To: ${settings.speechVolume}%\n\n"
+        }
         enabledDevices += "Default Modes:\n"
         enabledDevices += "   "
         settings.speechModesDefault.each(){
@@ -1186,6 +1191,9 @@ def pageConfigure(){
             //input "speechDeviceDefault", "capability.speechSynthesis", title: "Talk with these text-to-speech devices (default)", multiple: true, required: false, refreshAfterSelection: false
             input "speechDeviceDefault", "capability.musicPlayer", title: "Talk with these text-to-speech devices (default)", multiple: true, required: true, refreshAfterSelection: false
         }
+        section ("Adjust volume during announcement (optional; Supports: Sonos, VLC-Thing):"){
+            input "speechVolume", "number", title: "Set volume to (1-100%):", required: false
+        }
         section ("When in these modes:"){
             input "speechModesDefault", "mode", title: "Talk only while in these modes (default)", multiple: true, required: true, refreshAfterSelection: false
         }
@@ -1985,27 +1993,44 @@ def Talk(phrase, customSpeechDevice, evt){
             def currentStatus = it.currentValue("status")
             def currentTrack = it.currentState("trackData")?.jsonValue
             def currentVolume = it.currentState("level")?.integerValue ? it.currentState("level")?.integerValue : 0
-            LOGDEBUG("${it.displayName} | Volume: ${currentVolume}")
+            if (settings.speechVolume) { LOGDEBUG("${it.displayName} | Volume: ${currentVolume}, Desired Volume: ${settings.speechVolume}") }
+            if (!(settings.speechVolume)) { LOGDEBUG("${it.displayName} | Volume: ${currentVolume}") }
             if (!(currentTrack == null)){
                 //currentTrack has data
                 LOGTRACE("${it.displayName} | Current Status: ${currentStatus}, CurrentTrack: ${currentTrack}, CurrentTrack.Status: ${currentTrack.status}.")
                 if (currentTrack.status == 'playing') {
                     LOGTRACE("${it.displayName} | Resuming play. Sending playTextAndResume().")
-                    it.playTextAndResume(phrase)
+                    if (settings.speechVolume) { 
+                        it.playTextAndResume(phrase, settings.speechVolume) 
+                    } else { 
+                        it.playTextAndResume(phrase, currentVolume) 
+                    }
                 } else
                 {
                     LOGDEBUG("${it.displayName} | Nothing playing. Sending playTextAndResume()")
-                    it.playTextAndResume(phrase) //Let's just call playTextAndResume() anyway
+                    if (settings.speechVolume) { 
+                        it.playTextAndResume(phrase, settings.speechVolume) 
+                    } else { 
+                        it.playTextAndResume(phrase, currentVolume) 
+                    }
                 }
             } else {
                 //currentTrack doesn't have data or is not supported on this device
                 if (currentStatus == "disconnected") {
                     //VLCThing?
                     LOGTRACE("${it.displayName} | VLCThing? | Current Status: ${currentStatus}.")
-                    it.playText(phrase) //VLCThing speaks only part of the phrase if using playTextAndResume() or playTextAndRestore 12/15/2014
+                    if (settings.speechVolume) { 
+                        it.playTextAndResume(phrase, settings.speechVolume) 
+                    } else { 
+                        it.playTextAndResume(phrase, currentVolume) 
+                    }
                 } else {
                     LOGTRACE("${it.displayName} | Current Status: ${currentStatus}. Sending playTextAndRestore().")
-                    it.playTextAndResume(phrase) //Let's just call playTextAndRestore() anyway
+                    if (settings.speechVolume) { 
+                        it.playTextAndResume(phrase, settings.speechVolume) 
+                    } else { 
+                        it.playTextAndResume(phrase, currentVolume) 
+                    }
                 }
             }
         }
@@ -2479,5 +2504,5 @@ def LOGTRACE(txt){
     log.trace("${app.label.replace(" ","").toUpperCase()}(${state.appversion}) || ${txt}")
 }
 def setAppVersion(){
-    state.appversion = "1.0.3-Alpha2"
+    state.appversion = "1.0.3-Alpha3"
 }
