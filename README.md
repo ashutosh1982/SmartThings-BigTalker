@@ -47,6 +47,7 @@ Version: 1.0.3-Alpha4
   *  Added Volume Change (supported for Sonos, VLC-Thing, not supported for Ubi due to lack of support in it's device type)
 *  12/27/2014 - 1.0.3-Alpha4
   *  Corrected small bug on status page that was introduced in 1.0.3-Alpha3
+
 # More Details
 Have you ever wanted a talking house? Now you can! With my Big Talker SmartApp ( http://github.com/rayzurbock/SmartThings-BigTalker )
 
