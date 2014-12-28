@@ -1,5 +1,5 @@
 /**
- *  Big Talker  -- Version 1.0.3-Alpha3
+ *  Big Talker  -- Version 1.0.3-Alpha4
  *  Copyright 2014 brian@rayzurbock.com
  *  For the latest version and test releases visit http://www.github.com/rayzurbock
  *  This app is free. Donations to support development efforts are accepted via Paypal at: rayzur@rayzurbock.com
@@ -28,6 +28,8 @@ CHANGE LOG for 1.0.3-Alpha2
    12/27/2014 - Status page: add defaults, cleanup look
 CHANGE LOG for 1.0.3-Alpha3   
    12/27/2014 - Added Volume Change (supported for Sonos, VLC-Thing, not supported for Ubi due to lack of support in it's device type)
+CHANGE LOG for 1.0.3-Alpha4
+   12/27/2014 - Corrected small bug on status page
  */
 definition(
     name: "Big Talker Dev",
@@ -714,9 +716,10 @@ def pageStatus(){
             if (settings.thermostatSpeechDevice1) {
                 enabledDevices += "Custom Speech Device(s):\n"
                 enabledDevices += "   "
-                settings.contactSpeechDevice1.each() {
+                settings.thermostatSpeechDevice1.each() {
                     enabledDevices += "${it.displayName},"
                 }
+                enabledDevices += "\n\n"
             }
             if (settings.thermostatModes1) {
                 enabledDevices += "Custom mode(s):\n"
@@ -2504,5 +2507,5 @@ def LOGTRACE(txt){
     log.trace("${app.label.replace(" ","").toUpperCase()}(${state.appversion}) || ${txt}")
 }
 def setAppVersion(){
-    state.appversion = "1.0.3-Alpha3"
+    state.appversion = "1.0.3-Alpha4"
 }
