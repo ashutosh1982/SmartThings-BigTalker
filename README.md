@@ -1,17 +1,17 @@
 #Description
 Big Talker is a SmartApp for SmartThings that can make your house talk depending on various triggered events. <br />
 Pair with any SmartThings compatible audio device such as Sonos, VLC Thing on your computer or Raspberry Pi!  See <b>More Details</b> section below for more features.<br />
-Version: 1.0.3-Alpha4 <br />
+Version: 1.0.3-Alpha5 <br />
 
 #Support the project
  This SmartApp is free. Donations to support development efforts are accepted via:
- * PayPal to: rayzur at rayzurbock.com
+ * PayPal to: rayzur [at] rayzurbock.com
  * Link: <a href='https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WKB9N9MPUGTZS'>PayPal Donation (for supporters with or without a Paypal account)</a>
  * Link: <a href='https://squareup.com/market/brian-lowrance#category-a58f6ff3-7380-471b-8432-7e5881654e2c'>Square Marketplace</a>
 
 #License
 **BIG TALKER -- A SmartApp for SmartThings Home Automation System** <br />
-Copyright 2014 - rayzur at rayzurbock.com - Brian S. Lowrance <br />
+Copyright 2014 - rayzur [at] rayzurbock.com - Brian S. Lowrance <br />
 For the latest version, development and test releases visit http://www.github.com/rayzurbock <br />
 <br />
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the  License. You may obtain a copy of the License at: <br/>
@@ -90,3 +90,7 @@ Have Fun!
   *  Added Volume Change (supported for Sonos, VLC-Thing, not supported for Ubi due to lack of support in it's device type)
 *  12/27/2014 - 1.0.3-Alpha4
   *  Corrected small bug on status page that was introduced in 1.0.3-Alpha3
+*  1/4/2015 - 1.0.3-Alpha5
+  *  BugFix: VLCThing reporting "stopped" instead of "disconnected" therefore it was calling "playTextAndResume" and cutting off phrases.  Adjusted to playText if no trackdata found.
+  *  BugFix: Switch Group 3 was not working.  onSwitch3Event() function missing; Added.  Thanks GitHub @roblandry (Issue #5).
+  *  Feature: Mode change exclusion: Remain silent when changed to a configured mode, when coming from an excluded mode.  Thanks for the request SmartThingsCommunity:Greg.
