@@ -1,9 +1,14 @@
 /**
- *  Big Talker  -- Version 1.0.3-Alpha4
- *  Copyright 2014 brian@rayzurbock.com
- *  For the latest version and test releases visit http://www.github.com/rayzurbock
- *  This app is free. Donations to support development efforts are accepted via Paypal at: rayzur@rayzurbock.com
+ *  BIG TALKER -- Version 1.0.3-Alpha5 -- A SmartApp for SmartThings Home Automation System
+ *  Copyright 2014 - rayzur [at] rayzurbock.com - Brian S. Lowrance
+ *  For the latest version, development and test releases visit http://www.github.com/rayzurbock
  *
+ *  This SmartApp is free. Donations to support development efforts are accepted via: 
+ *      -- Paypal at: rayzur [at] rayzurbock.com
+ *      -- Paypal Donation (for supporters without a Paypal account): https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WKB9N9MPUGTZS
+ *      -- Square Marketplace at: https://squareup.com/market/brian-lowrance#category-a58f6ff3-7380-471b-8432-7e5881654e2c
+ *
+ *-------------------------------------------------------------------------------------------------------------------
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  *  in compliance with the License. You may obtain a copy of the License at:
  *
@@ -12,29 +17,16 @@
  *  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed
  *  on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License
  *  for the specific language governing permissions and limitations under the License.
+ *-------------------------------------------------------------------------------------------------------------------
+ *  If modifying this project, please keep the above header in tact.
  *
- * 
+ *  Feature Requests and Change Log have been moved to the bottom of the source.
  */
  
- /*
- CHANGE LOG for 1.0.3-Alpha1
-   12/26/2014 - Acceleration (active/inactive) event added and tested
-   12/26/2014 - Water (wet/dry) event added, to be tested...
-   12/26/2014 - Smoke (detected/clear/tested) event added, to be tested (without burning a house down, please!)...
-   12/26/2014 - Button (press) event added, to be tested...
-CHANGE LOG for 1.0.3-Alpha2
-   12/27/2014 - Adjusted some debug/trace log info
-   12/27/2014 - Added default "talk while in mode(s)" with custom mode overrides for each event group.
-   12/27/2014 - Status page: add defaults, cleanup look
-CHANGE LOG for 1.0.3-Alpha3   
-   12/27/2014 - Added Volume Change (supported for Sonos, VLC-Thing, not supported for Ubi due to lack of support in it's device type)
-CHANGE LOG for 1.0.3-Alpha4
-   12/27/2014 - Corrected small bug on status page
- */
 definition(
     name: "Big Talker Dev",
     namespace: "rayzurbock",
-    author: "brian@rayzurbock.com",
+    author: "rayzur [at] rayzurbock.com",
     description: "Let's talk about mode changes, switches, motions, and so on.",
     category: "Fun & Social",
     iconUrl: "http://rayzurbock.com/ST/icons/BigTalker.png",
@@ -674,6 +666,14 @@ def pageStatus(){
                 enabledDevices += "${it},"
             }
             enabledDevices += "\n\n"
+            if (settings.modeExcludePhraseGroup1) {
+                enabledDevices += "Remain silent if mode is changed from:\n "
+                enabledDevices += "   "
+                settings.modeExcludePhraseGroup1.each(){
+                    enabledDevices += "${it},"
+                }
+                enabledDevices += "\n\n"
+            }            
             if (settings.contactTalkOnOpen1) {
                 enabledDevices += "Say when changed:\n ${settings.TalkOnModeChange1}\n\n"
             }
@@ -1357,9 +1357,17 @@ def pageConfigContact(){
 }
 
 def pageConfigMode(){
+    def locationmodes = []
+    location.modes.each(){
+       locationmodes += it
+    }
+    LOGDEBUG("locationmodes=${locationmodes}")
     dynamicPage(name: "pageConfigMode", title: "Configure talk on home mode change", install: false, uninstall: false) {
-        section(){
-            input name: "modePhraseGroup1", type: "mode", title: "Home Modes", required: false, multiple: true
+        section("Mode Group 1"){
+            //input name: "modePhraseGroup1", type:"enum", title:"When mode changes to: ", options:locationmodes, required:false, multiple:true, refreshAfterSelection:true
+            //input name: "modePhraseGroup1", type:"enum", title:"When mode changes to: ", metadata:[values:(locationmodes)], required:false, multiple:true, refreshAfterSelection:true
+            input name: "modePhraseGroup1", type:"mode", title:"When mode changes to: ", required:false, multiple:true, refreshAfterSelection:false
+            input name: "modeExcludePhraseGroup1", type: "mode", title: "But not when changed from (optional): ", required: false, multiple: true
             input name: "TalkOnModeChange1", type: "text", title: "Say this when home mode is changed", required: false, defaultValue: "%locationname% mode has changed from %lastmode% to %mode%"
             input name: "modePhraseSpeechDevice1", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
         }
@@ -1617,6 +1625,10 @@ def onSwitch2Event(evt){
     processSwitchEvent(2, evt)
 }
 
+def onSwitch3Event(evt){
+    processSwitchEvent(3, evt)
+}
+
 def processSwitchEvent(index, evt){
     LOGDEBUG("(onSwitchEvent): ${evt.name}, ${index}, ${evt.value}")
     //Are we in a talking mode?
@@ -1760,16 +1772,19 @@ def onModeChangeEvent(evt){
     processModeChangeEvent(1, evt)
 }
 def processModeChangeEvent(index, evt){
-    LOGDEBUG("(onModeEvent): Last Mode: ${state.lastMode}, New Mode: ${location.mode}, Talk: ${settings.modePhraseGroup1.contains(location.mode)}")
+    LOGDEBUG("(onModeEvent): Last Mode: ${state.lastMode}, New Mode: ${location.mode}")
     if (settings.modePhraseGroup1.contains(location.mode)){
-        LOGDEBUG("Mode change processing...")
-        state.TalkPhrase = null
-        state.speechDevice = null
-        state.TalkPhrase = settings.TalkOnModeChange1; state.speechDevice = modePhraseSpeechDevice1
-        Talk(state.TalkPhrase, state.speechDevice, evt)
-        state.TalkPhrase = null
-        state.speechDevice = null
-        state.lastMode = location.mode
+        if (!(settings.modeExcludePhraseGroup1.contains(state.lastMode))) {
+            state.TalkPhrase = null
+            state.speechDevice = null
+            state.TalkPhrase = settings.TalkOnModeChange1; state.speechDevice = modePhraseSpeechDevice1
+            Talk(state.TalkPhrase, state.speechDevice, evt)
+            state.TalkPhrase = null
+            state.speechDevice = null
+            state.lastMode = location.mode
+        }
+            LOGDEBUG("Mode change silent due to exclusion configuration (${state.lastMode} >> ${location.mode})")
+            state.lastMode = location.mode
     }
 }
 //END MODE CHANGE
@@ -2000,7 +2015,7 @@ def Talk(phrase, customSpeechDevice, evt){
             if (!(settings.speechVolume)) { LOGDEBUG("${it.displayName} | Volume: ${currentVolume}") }
             if (!(currentTrack == null)){
                 //currentTrack has data
-                LOGTRACE("${it.displayName} | Current Status: ${currentStatus}, CurrentTrack: ${currentTrack}, CurrentTrack.Status: ${currentTrack.status}.")
+                LOGTRACE("${it.displayName} | (1)Current Status: ${currentStatus}, CurrentTrack: ${currentTrack}, CurrentTrack.Status: ${currentTrack.status}.")
                 if (currentTrack.status == 'playing') {
                     LOGTRACE("${it.displayName} | Resuming play. Sending playTextAndResume().")
                     if (settings.speechVolume) { 
@@ -2010,7 +2025,7 @@ def Talk(phrase, customSpeechDevice, evt){
                     }
                 } else
                 {
-                    LOGDEBUG("${it.displayName} | Nothing playing. Sending playTextAndResume()")
+                    LOGDEBUG("${it.displayName} | (2)Nothing playing. Sending playTextAndResume()")
                     if (settings.speechVolume) { 
                         it.playTextAndResume(phrase, settings.speechVolume) 
                     } else { 
@@ -2021,18 +2036,22 @@ def Talk(phrase, customSpeechDevice, evt){
                 //currentTrack doesn't have data or is not supported on this device
                 if (currentStatus == "disconnected") {
                     //VLCThing?
-                    LOGTRACE("${it.displayName} | VLCThing? | Current Status: ${currentStatus}.")
+                    LOGTRACE("${it.displayName} | (3)VLCThing? | Current Status: ${currentStatus}.")
                     if (settings.speechVolume) { 
-                        it.playTextAndResume(phrase, settings.speechVolume) 
+                        it.setLevel(settings.speechVolume)
+                        it.playText(phrase)
+                        it.setLevel(currentVolume)
                     } else { 
-                        it.playTextAndResume(phrase, currentVolume) 
+                        it.playText(phrase) 
                     }
                 } else {
-                    LOGTRACE("${it.displayName} | Current Status: ${currentStatus}. Sending playTextAndRestore().")
+                    LOGTRACE("${it.displayName} | (4)Current Status: ${currentStatus}.")
                     if (settings.speechVolume) { 
-                        it.playTextAndResume(phrase, settings.speechVolume) 
+                        it.setLevel(settings.speechVolume)
+                        it.playText(phrase)
+                        it.setLevel(currentVolume)
                     } else { 
-                        it.playTextAndResume(phrase, currentVolume) 
+                        it.playText(phrase) 
                     }
                 }
             }
@@ -2488,15 +2507,10 @@ def modeAllowed(devicetype,index) {
     } //End: switch (devicetype)
 }
 
-def TalkNow(phrase, customSpeechDevice, evt){
-    //IN DEVELOPMENT
-    // Queue is empty, talk now
-    LOGDEBUG("TalkNow()")
-}
 def TalkQueue(phrase, customSpeechDevice, evt){
     //IN DEVELOPMENT
     // Already talking or just recently (within x seconds) started talking
-    // Queue up current request(s), give time for current action to complete, then speak queue
+    // Queue up current request(s), give time for current action to complete, then speak and flush queue
     LOGDEBUG("TALKQUEUE()")
 }
 
@@ -2507,5 +2521,29 @@ def LOGTRACE(txt){
     log.trace("${app.label.replace(" ","").toUpperCase()}(${state.appversion}) || ${txt}")
 }
 def setAppVersion(){
-    state.appversion = "1.0.3-Alpha4"
+    state.appversion = "1.0.3-Alpha5"
 }
+
+ /*
+FEATURE REQUESTS:
+  - Multiple home mode change groups for various configurations (To prevent overlap, may need to exclude mode selections from being used in other groups; exclusions can be used in all groups)
+  - AND/OR logic for devices within a device group (require all devices in a group to be in a state before talking or talk on individual device state changes)
+
+CHANGE LOG for 1.0.3-Alpha1
+   12/26/2014 - Acceleration (active/inactive) event added and tested
+   12/26/2014 - Water (wet/dry) event added
+   12/26/2014 - Smoke (detected/clear/tested) event added
+   12/26/2014 - Button (press) event added, to be tested...
+CHANGE LOG for 1.0.3-Alpha2
+   12/27/2014 - Adjusted some debug/trace log info
+   12/27/2014 - Added default "talk while in mode(s)" with custom mode overrides for each event group.
+   12/27/2014 - Status page: add defaults, cleanup look
+CHANGE LOG for 1.0.3-Alpha3   
+   12/27/2014 - Added Volume Change (supported for Sonos, VLC-Thing, not supported for Ubi due to lack of support in it's device type)
+CHANGE LOG for 1.0.3-Alpha4
+   12/27/2014 - BugFix: Corrected small bug on status page
+CHANGE LOG for 1.0.3-Alpha5
+   1/2/2015 - BugFix: VLCThing reporting "stopped" instead of "disconnected" therefore it was calling "playTextAndResume" and cutting off phrases.  Adjusted to playText if no trackdata found.
+   1/4/2015 - BugFix: Switch Group 3 was not working.  onSwitch3Event() function missing; Added.  Thanks GitHub @roblandry (Issue #5).
+   1/4/2015 - Feature: Mode change exclusion: Remain silent when changed to a configured mode, when coming from an excluded mode.  Thanks for the request SmartThingsCommunity:Greg.
+ */
