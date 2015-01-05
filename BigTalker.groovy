@@ -1,10 +1,10 @@
 /**
- *  BIG TALKER -- Version 1.0.3-Alpha5 -- A SmartApp for SmartThings Home Automation System
- *  Copyright 2014 - rayzur [at] rayzurbock.com - Brian S. Lowrance
+ *  BIG TALKER -- Version 1.0.3-Alpha6 -- A SmartApp for SmartThings Home Automation System
+ *  Copyright 2014 - rayzur@rayzurbock.com - Brian S. Lowrance
  *  For the latest version, development and test releases visit http://www.github.com/rayzurbock
  *
  *  This SmartApp is free. Donations to support development efforts are accepted via: 
- *      -- Paypal at: rayzur [at] rayzurbock.com
+ *      -- Paypal at: rayzur@rayzurbock.com
  *      -- Paypal Donation (for supporters without a Paypal account): https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WKB9N9MPUGTZS
  *      -- Square Marketplace at: https://squareup.com/market/brian-lowrance#category-a58f6ff3-7380-471b-8432-7e5881654e2c
  *
@@ -26,7 +26,7 @@
 definition(
     name: "Big Talker Dev",
     namespace: "rayzurbock",
-    author: "rayzur [at] rayzurbock.com",
+    author: "rayzur@rayzurbock.com",
     description: "Let's talk about mode changes, switches, motions, and so on.",
     category: "Fun & Social",
     iconUrl: "http://rayzurbock.com/ST/icons/BigTalker.png",
@@ -2522,7 +2522,7 @@ def LOGTRACE(txt){
     log.trace("${app.label.replace(" ","").toUpperCase()}(${state.appversion}) || ${txt}")
 }
 def setAppVersion(){
-    state.appversion = "1.0.3-Alpha5"
+    state.appversion = "1.0.3-Alpha6"
 }
 
  /*
