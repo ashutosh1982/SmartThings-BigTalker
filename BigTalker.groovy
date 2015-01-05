@@ -1782,9 +1782,10 @@ def processModeChangeEvent(index, evt){
             state.TalkPhrase = null
             state.speechDevice = null
             state.lastMode = location.mode
-        }
+        } else {
             LOGDEBUG("Mode change silent due to exclusion configuration (${state.lastMode} >> ${location.mode})")
             state.lastMode = location.mode
+        }
     }
 }
 //END MODE CHANGE
@@ -2546,4 +2547,6 @@ CHANGE LOG for 1.0.3-Alpha5
    1/2/2015 - BugFix: VLCThing reporting "stopped" instead of "disconnected" therefore it was calling "playTextAndResume" and cutting off phrases.  Adjusted to playText if no trackdata found.
    1/4/2015 - BugFix: Switch Group 3 was not working.  onSwitch3Event() function missing; Added.  Thanks GitHub @roblandry (Issue #5).
    1/4/2015 - Feature: Mode change exclusion: Remain silent when changed to a configured mode, when coming from an excluded mode.  Thanks for the request SmartThingsCommunity:Greg.
+CHANGE LOG for 1.0.3-Alpha6
+   1/4/2015 - BugFix: Mode change exclusion contained a logic processing bug, corrected.
  */
