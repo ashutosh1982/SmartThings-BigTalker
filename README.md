@@ -1,7 +1,7 @@
 #Description
 Big Talker is a SmartApp for SmartThings that can make your house talk depending on various triggered events. <br />
 Pair with any SmartThings compatible audio device such as Sonos, VLC Thing on your computer or Raspberry Pi!  See <b>More Details</b> section below for more features.<br />
-Version: 1.0.3-Alpha5 <br />
+Version: 1.0.3-Alpha6 <br />
 
 #Support the project
  This SmartApp is free. Donations to support development efforts are accepted via:
@@ -94,3 +94,5 @@ Have Fun!
   *  BugFix: VLCThing reporting "stopped" instead of "disconnected" therefore it was calling "playTextAndResume" and cutting off phrases.  Adjusted to playText if no trackdata found.
   *  BugFix: Switch Group 3 was not working.  onSwitch3Event() function missing; Added.  Thanks GitHub @roblandry (Issue #5).
   *  Feature: Mode change exclusion: Remain silent when changed to a configured mode, when coming from an excluded mode.  Thanks for the request SmartThingsCommunity:Greg.
+* 1/4/2015 - 1.0.3-Alpha6
+  * BugFix: Mode change exclusion contained a logic processing bug, corrected.
