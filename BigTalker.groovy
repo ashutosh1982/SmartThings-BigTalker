@@ -1,5 +1,5 @@
 /**
- *  BIG TALKER -- Version 1.0.3-Alpha7 -- A SmartApp for SmartThings Home Automation System
+ *  BIG TALKER -- Version 1.0.3-Alpha8 -- A SmartApp for SmartThings Home Automation System
  *  Copyright 2014 - rayzur@rayzurbock.com - Brian S. Lowrance
  *  For the latest version, development and test releases visit http://www.github.com/rayzurbock
  *
@@ -1781,12 +1781,11 @@ def processModeChangeEvent(index, evt){
             Talk(state.TalkPhrase, state.speechDevice, evt)
             state.TalkPhrase = null
             state.speechDevice = null
-            state.lastMode = location.mode
         } else {
             LOGDEBUG("Mode change silent due to exclusion configuration (${state.lastMode} >> ${location.mode})")
-            state.lastMode = location.mode
         }
     }
+    state.lastMode = location.mode
 }
 //END MODE CHANGE
 
@@ -2522,7 +2521,7 @@ def LOGTRACE(txt){
     log.trace("${app.label.replace(" ","").toUpperCase()}(${state.appversion}) || ${txt}")
 }
 def setAppVersion(){
-    state.appversion = "1.0.3-Alpha7"
+    state.appversion = "1.0.3-Alpha8"
 }
 
  /*
@@ -2551,4 +2550,6 @@ CHANGE LOG for 1.0.3-Alpha6
    1/4/2015 - BugFix: Mode change exclusion contained a logic processing bug, corrected.
 CHANGE LOG for 1.0.3-Alpha7
    1/6/2015 - BugFix: Ensure uninstall option is always available on the Configure page.
+CHANGE LOG for 1.0.3-Alpha8
+   1/6/2015 - BugFix: Mode change announcement may announce previous mode incorrectly.  Resolved.
  */
