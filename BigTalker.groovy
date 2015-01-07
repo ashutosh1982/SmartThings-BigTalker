@@ -1,5 +1,5 @@
 /**
- *  BIG TALKER -- Version 1.0.3-Alpha6 -- A SmartApp for SmartThings Home Automation System
+ *  BIG TALKER -- Version 1.0.3-Alpha7 -- A SmartApp for SmartThings Home Automation System
  *  Copyright 2014 - rayzur@rayzurbock.com - Brian S. Lowrance
  *  For the latest version, development and test releases visit http://www.github.com/rayzurbock
  *
@@ -1189,7 +1189,7 @@ def pageStatus(){
 
 def pageConfigure(){
     if (state.installed == null) { state.installed = false }
-    dynamicPage(name: "pageConfigure", title: "Configure", install: true, uninstall: state.installed) {
+    dynamicPage(name: "pageConfigure", title: "Configure", install: true, uninstall: true) {
         section ("Talk with:"){
             //input "speechDeviceDefault", "capability.speechSynthesis", title: "Talk with these text-to-speech devices (default)", multiple: true, required: false, refreshAfterSelection: false
             input "speechDeviceDefault", "capability.musicPlayer", title: "Talk with these text-to-speech devices (default)", multiple: true, required: true, refreshAfterSelection: false
@@ -2522,7 +2522,7 @@ def LOGTRACE(txt){
     log.trace("${app.label.replace(" ","").toUpperCase()}(${state.appversion}) || ${txt}")
 }
 def setAppVersion(){
-    state.appversion = "1.0.3-Alpha6"
+    state.appversion = "1.0.3-Alpha7"
 }
 
  /*
@@ -2549,4 +2549,6 @@ CHANGE LOG for 1.0.3-Alpha5
    1/4/2015 - Feature: Mode change exclusion: Remain silent when changed to a configured mode, when coming from an excluded mode.  Thanks for the request SmartThingsCommunity:Greg.
 CHANGE LOG for 1.0.3-Alpha6
    1/4/2015 - BugFix: Mode change exclusion contained a logic processing bug, corrected.
+CHANGE LOG for 1.0.3-Alpha7
+   1/6/2015 - BugFix: Ensure uninstall option is always available on the Configure page.
  */
