@@ -1,7 +1,7 @@
 #Description
 Big Talker is a SmartApp for SmartThings that can make your house talk depending on various triggered events. <br />
 Pair with any SmartThings compatible audio device such as Sonos, VLC Thing on your computer or Raspberry Pi!  See <b>More Details</b> section below for more features.<br />
-Version: 1.0.3-Alpha8 <br />
+Version: 1.0.3-Beta1 <br />
 
 #Support the project
  This SmartApp is free. Donations to support development efforts are accepted via:
@@ -100,3 +100,12 @@ Have Fun!
   * BugFix: Ensure Uninstall button is always on the "Configure" page, even for partially installed instances
 * 1/6/2015 - 1.0.3-Alpha8
   * BugFix: Mode change announcement may announce previous mode incorrectly.  Resolved.
+* 2/7/2015 - 1.0.3-Beta1
+  * Moving from Alpha (development) to Beta (testing)
+  * 1/4/2015 - Feature: Toggle support for either capability.musicPlayer(Sonos/VLCThing) or capability.speechSynthesis(Sonos/VLCThing).  Note: Only one type or the other is currently configurable in the app at a time.
+    * Install the app twice to support both modes.
+  * 1/4/2015 - Configuration flow change (to better support the choice of musicPlayer / speechSynthesis)
+  * 1/6/2015 - BugFix: Mode change announcement may announce previous mode incorrectly.  Resolved.
+  * 2/6/2015 - Feature: Optional: Default Allowed Talk Time, with per event group override. (Thanks ST Community: Greg for the idea)
+  * 2/6/2015 - Feature: Added Talk Now feature (once the app is properly setup/configured, it will show up on the main page under Status and Configure).
+  * 2/6/2015 - Feature Modification: Default text is shown in Group 1 of each device type as an example; if the user deletes the text and saves, it reappears the next time they edit the event type. This modification only fills the default text if the speech text is blank AND the device list is empty.  (Thanks for the feedback ST Community: Greg)
