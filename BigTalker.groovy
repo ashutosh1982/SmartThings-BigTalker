@@ -3197,7 +3197,7 @@ CHANGE LOG for 1.0.3-Alpha6
 CHANGE LOG for 1.0.3-Alpha7
    1/6/2015 - BugFix: If a user starts to configure the app and backs out before completing configuration, multiple instances may be created without an Uninstall button. This release ensures the Uninstall version is always available.
 CHANGE LOG for 1.0.3-Beta1
-   1/4/2015 - Feature: Toggle support for either capability.musicPlayer(Sonos/VLCThing) or capability.speechSynthesis(Sonos/VLCThing).  Note: Only one type or the other is currently configurable in the app at a time.  Install the app twice to support both modes.
+   1/4/2015 - Feature: Toggle support for either capability.musicPlayer(Sonos/VLCThing) or capability.speechSynthesis(Ubi/VLCThing).  Note: Only one type or the other is currently configurable in the app at a time.  Install the app twice to support both modes.
    1/4/2015 - Configuration flow change (to better support the choice of musicPlayer / speechSynthesis)
    1/6/2015 - BugFix: Mode change announcement may announce previous mode incorrectly.  Resolved.
    2/6/2015 - Feature: Optional: Default Allowed Talk Time, with per event group override. (Thanks ST Community: Greg for the idea)
