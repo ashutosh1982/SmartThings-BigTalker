@@ -1442,7 +1442,7 @@ def pageStatus(){
 def pageTalkNow(){
     dynamicPage(name: "pageTalkNow", title: "Talk Now", install: false, uninstall: false){
         section(""){
-            paragraph ("Speak the following phrase after selecting speech device OR pressing Done\nNote: must differ from the last spoken phrase\n")
+            paragraph ("Speak the following phrase:\nNote: must differ from the last spoken phrase\n")
             input name: "speechTalkNow", type: text, title: "Speak phrase", required: false, refreshAfterSelection: true
             input name: "talkNowSpeechDevice", type: state.speechDeviceType, title: "Talk with these text-to-speech devices", multiple: true, required: (!(settings.speechTalkNow == null)), refreshAfterSelection: true
             //LOGDEBUG("previoustext=${state.lastTalkNow} New=${settings.speechTalkNow}")
@@ -1564,8 +1564,8 @@ def pageConfigSwitch(){
             input name: "switchTalkOff1", type: "text", title: "Say this when switch is turned OFF:", required: false, defaultValue: defaultSpeechOff1
             input name: "switchSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "switchModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "switchStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "switchEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.switchStartTime1 == null))
+            input name: "switchStartTime1", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "switchEndTime1", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.switchStartTime1 == null))
         }
         section("Switch Group 2"){
             input name: "switchDeviceGroup2", type: "capability.switch", title: "Switch(es)", required: false, multiple: true
@@ -1573,8 +1573,8 @@ def pageConfigSwitch(){
             input name: "switchTalkOff2", type: "text", title: "Say this when switch is turned OFF:", required: false
             input name: "switchSpeechDevice2", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "switchModes2", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "switchStartTime2", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "switchEndTime2", "time", title: "Don't talk after (overrides default)", required: (!(settings.switchStartTime2 == null))
+            input name: "switchStartTime2", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "switchEndTime2", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.switchStartTime2 == null))
         }
         section("Switch Group 3"){
             input name: "switchDeviceGroup3", type: "capability.switch", title: "Switch(es)", required: false, multiple: true
@@ -1582,8 +1582,8 @@ def pageConfigSwitch(){
             input name: "switchTalkOff3", type: "text", title: "Say this when switch is turned OFF:", required: false
             input name: "switchSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "switchModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "switchStartTime3", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "switchEndTime3", "time", title: "Don't talk after (overrides default)", required: (!(settings.switchStartTime3 == null))
+            input name: "switchStartTime3", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "switchEndTime3", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.switchStartTime3 == null))
         }
     }
 //End pageConfigSwitch()
@@ -1603,8 +1603,8 @@ def pageConfigPresence(){
             input name: "presTalkOnLeave1", type: "text", title: "Say this when someone leaves:", required: false, defaultValue: defaultSpeechLeave1
             input name: "presSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "presModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "presStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "presEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.presStartTime1 == null))
+            input name: "presStartTime1", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "presEndTime1", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.presStartTime1 == null))
         }
         section("Presence Group 2"){
             input name: "presDeviceGroup2", type: "capability.presenceSensor", title: "Presence Sensor(s)", required: false, multiple: true
@@ -1612,8 +1612,8 @@ def pageConfigPresence(){
             input name: "presTalkOnLeave2", type: "text", title: "Say this when someone leaves:", required: false
             input name: "presSpeechDevice2", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "presModes2", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "presStartTime2", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "presEndTime2", "time", title: "Don't talk after (overrides default)", required: (!(settings.presStartTime2 == null))
+            input name: "presStartTime2", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "presEndTime2", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.presStartTime2 == null))
         }
         section("Presence Group 3"){
             input name: "presDeviceGroup3", type: "capability.presenceSensor", title: "Presence Sensor(s)", required: false, multiple: true
@@ -1621,8 +1621,8 @@ def pageConfigPresence(){
             input name: "presTalkOnLeave3", type: "text", title: "Say this when someone leaves:", required: false
             input name: "presSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "presModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "presStartTime3", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "presEndTime3", "time", title: "Don't talk after (overrides default)", required: (!(settings.presStartTime3 == null))
+            input name: "presStartTime3", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "presEndTime3", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.presStartTime3 == null))
         }
     }
 //End pageConfigPresence()
@@ -1642,8 +1642,8 @@ def pageConfigLock(){
             input name: "lockTalkOnLock1", type: "text", title: "Say this when locked:", required: false, defaultValue: defaultSpeechLock1
             input name: "lockSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "lockModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "lockStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "lockEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.lockStartTime1 == null))
+            input name: "lockStartTime1", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "lockEndTime1", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.lockStartTime1 == null))
         }
         section("Lock Group 2"){
             input name: "lockDeviceGroup2", type: "capability.lock", title: "Lock(s)", required: false, multiple: true
@@ -1651,8 +1651,8 @@ def pageConfigLock(){
             input name: "lockTalkOnLock2", type: "text", title: "Say this when locked:", required: false
             input name: "lockSpeechDevice2", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "lockModes2", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "lockStartTime2", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "lockEndTime2", "time", title: "Don't talk after (overrides default)", required: (!(settings.lockStartTime2 == null))
+            input name: "lockStartTime2", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "lockEndTime2", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.lockStartTime2 == null))
         }
         section("Lock Group 3"){
             input name: "lockDeviceGroup3", type: "capability.lock", title: "Lock(s)", required: false, multiple: true
@@ -1660,8 +1660,8 @@ def pageConfigLock(){
             input name: "lockTalkOnLock3", type: "text", title: "Say this when locked:", required: false
             input name: "lockSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "lockModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "lockStartTime3", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "lockEndTime3", "time", title: "Don't talk after (overrides default)", required: (!(settings.lockStartTime3 == null))
+            input name: "lockStartTime3", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "lockEndTime3", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.lockStartTime3 == null))
         }
     }
 //End pageConfigLock()
@@ -1681,8 +1681,8 @@ def pageConfigContact(){
             input name: "contactTalkOnClose1", type: "text", title: "Say this when closed:", required: false, defaultValue: defaultSpeechClose1
             input name: "contactSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "contactModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "contactStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "contactEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.contactStartTime1 == null))
+            input name: "contactStartTime1", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "contactEndTime1", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.contactStartTime1 == null))
         }
         section("Contact Group 2"){
             input name: "contactDeviceGroup2", type: "capability.contactSensor", title: "Contact sensor(s)", required: false, multiple: true
@@ -1690,8 +1690,8 @@ def pageConfigContact(){
             input name: "contactTalkOnClose2", type: "text", title: "Say this when closed:", required: false
             input name: "contactSpeechDevice2", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "contactModes2", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "contactStartTime2", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "contactEndTime2", "time", title: "Don't talk after (overrides default)", required: (!(settings.contactStartTime2 == null))
+            input name: "contactStartTime2", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "contactEndTime2", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.contactStartTime2 == null))
         }
         section("Contact Group 3"){
             input name: "contactDeviceGroup3", type: "capability.contactSensor", title: "Contact sensor(s)", required: false, multiple: true
@@ -1699,8 +1699,8 @@ def pageConfigContact(){
             input name: "contactTalkOnClose3", type: "text", title: "Say this when closed:", required: false
             input name: "contactSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "contactModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "contactStartTime3", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "contactEndTime3", "time", title: "Don't talk after (overrides default)", required: (!(settings.contactStartTime3 == null))
+            input name: "contactStartTime3", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "contactEndTime3", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.contactStartTime3 == null))
         }
     }
 //End pageConfigContact()
@@ -1722,8 +1722,8 @@ def pageConfigMode(){
             input name: "modeExcludePhraseGroup1", type: "mode", title: "But not when changed from (optional): ", required: false, multiple: true
             input name: "TalkOnModeChange1", type: "text", title: "Say this when home mode is changed", required: false, defaultValue: defaultSpeechMode1
             input name: "modePhraseSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
-            input name: "modeStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "modeEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.modeStartTime1 == null))
+            input name: "modeStartTime1", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "modeEndTime1", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.modeStartTime1 == null))
         }
     }
 //End pageConfigMode()
@@ -1749,8 +1749,8 @@ def pageConfigThermostat(){
             input name: "thermostatTalkOnFan1", type: "text", title: "Say this on change to fan only:", required: false, defaultValue: defaultSpeechFan1
             input name: "thermostatSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "thermostatModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "thermostatStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "thermostatEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.thermostatStartTime1 == null))
+            input name: "thermostatStartTime1", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "thermostatEndTime1", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.thermostatStartTime1 == null))
         }
     }
 //End pageConfigThermostat()
@@ -1770,8 +1770,8 @@ def pageConfigAcceleration(){
             input name: "accelerationTalkOnInactive1", type: "text", title: "Say this when inactivated:", required: false, defaultValue: defaultSpeechInactive1
             input name: "accelerationSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "accelerationModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "accelerationStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "accelerationEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.accelerationStartTime1 == null))
+            input name: "accelerationStartTime1", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "accelerationEndTime1", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.accelerationStartTime1 == null))
         }
         section("Acceleration Group 2"){
             input name: "accelerationDeviceGroup2", type: "capability.accelerationSensor", title: "Acceleration sensor(s)", required: false, multiple: true
@@ -1779,8 +1779,8 @@ def pageConfigAcceleration(){
             input name: "accelerationTalkOnInactive2", type: "text", title: "Say this when inactivated:", required: false
             input name: "accelerationSpeechDevice2", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "accelerationModes2", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "accelerationStartTime2", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "accelerationEndTime2", "time", title: "Don't talk after (overrides default)", required: (!(settings.accelerationStartTime2 == null))
+            input name: "accelerationStartTime2", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "accelerationEndTime2", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.accelerationStartTime2 == null))
         }
         section("Acceleration Group 3"){
             input name: "accelerationDeviceGroup3", type: "capability.accelerationSensor", title: "Acceleration sensor(s)", required: false, multiple: true
@@ -1788,8 +1788,8 @@ def pageConfigAcceleration(){
             input name: "accelerationTalkOnInactive3", type: "text", title: "Say this when inactivated:", required: false
             input name: "accelerationSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "accelerationModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "accelerationStartTime3", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "accelerationEndTime3", "time", title: "Don't talk after (overrides default)", required: (!(settings.accelerationStartTime3 == null))
+            input name: "accelerationStartTime3", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "accelerationEndTime3", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.accelerationStartTime3 == null))
         }
     }
 //End pageConfigAcceleration()
@@ -1809,8 +1809,8 @@ def pageConfigWater(){
             input name: "waterTalkOnDry1", type: "text", title: "Say this when dry:", required: false, defaultValue: defaultSpeechDry1
             input name: "waterSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "waterModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "waterStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "waterEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.waterStartTime1 == null))
+            input name: "waterStartTime1", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "waterEndTime1", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.waterStartTime1 == null))
         }
         section("Water Group 2"){
             input name: "waterDeviceGroup2", type: "capability.waterSensor", title: "Water sensor(s)", required: false, multiple: true
@@ -1818,8 +1818,8 @@ def pageConfigWater(){
             input name: "waterTalkOnDry2", type: "text", title: "Say this when dry:", required: false
             input name: "waterSpeechDevice2", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "waterModes2", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "waterStartTime2", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "waterEndTime2", "time", title: "Don't talk after (overrides default)", required: (!(settings.waterStartTime2 == null))
+            input name: "waterStartTime2", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "waterEndTime2", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.waterStartTime2 == null))
         }
         section("Water Group 3"){
             input name: "waterDeviceGroup3", type: "capability.waterSensor", title: "Water sensor(s)", required: false, multiple: true
@@ -1827,8 +1827,8 @@ def pageConfigWater(){
             input name: "waterTalkOnDry3", type: "text", title: "Say this when dry:", required: false
             input name: "waterSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "waterModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "waterStartTime3", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "waterEndTime3", "time", title: "Don't talk after (overrides default)", required: (!(settings.waterStartTime3 == null))
+            input name: "waterStartTime3", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "waterEndTime3", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.waterStartTime3 == null))
         }
     }
 //End pageConfigWater()
@@ -1851,8 +1851,8 @@ def pageConfigSmoke(){
             input name: "smokeTalkOnTest1", type: "text", title: "Say this when tested:", required: false, defaultValue: defaultSpeechTest1
             input name: "smokeSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "smokeModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "smokeStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "smokeEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.smokeStartTime1 == null))
+            input name: "smokeStartTime1", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "smokeEndTime1", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.smokeStartTime1 == null))
         }
         section("Smoke Group 2"){
             input name: "smokeDeviceGroup2", type: "capability.smokeDetector", title: "Smoke detector(s)", required: false, multiple: true
@@ -1861,8 +1861,8 @@ def pageConfigSmoke(){
             input name: "smokeTalkOnTest2", type: "text", title: "Say this when tested:", required: false
             input name: "smokeSpeechDevice2", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "smokeModes2", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "smokeStartTime2", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "smokeEndTime2", "time", title: "Don't talk after (overrides default)", required: (!(settings.smokeStartTime2 == null))
+            input name: "smokeStartTime2", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "smokeEndTime2", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.smokeStartTime2 == null))
         }
         section("Smoke Group 3"){
             input name: "smokeDeviceGroup3", type: "capability.smokeDetector", title: "Smoke detector(s)", required: false, multiple: true
@@ -1871,8 +1871,8 @@ def pageConfigSmoke(){
             input name: "smokeTalkOnTest3", type: "text", title: "Say this when tested:", required: false
             input name: "smokeSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "smokeModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "smokeStartTime3", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "smokeEndTime3", "time", title: "Don't talk after (overrides default)", required: (!(settings.smokeStartTime3 == null))
+            input name: "smokeStartTime3", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "smokeEndTime3", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.smokeStartTime3 == null))
         }
     }
 //End pageConfigSmoke()
@@ -1889,24 +1889,24 @@ def pageConfigButton(){
             input name: "buttonTalkOnPress1", type: "text", title: "Say this when pressed:", required: false, defaultValue: defaultSpeechButton1
             input name: "buttonSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "buttonModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "buttonStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "buttonEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.buttonStartTime1 == null))
+            input name: "buttonStartTime1", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "buttonEndTime1", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.buttonStartTime1 == null))
         }
         section("Button Group 2"){
             input name: "buttonDeviceGroup2", type: "capability.button", title: "Button(s)", required: false, multiple: true
             input name: "buttonTalkOnPress2", type: "text", title: "Say this when pressed:", required: false
             input name: "buttonSpeechDevice2", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "buttonModes2", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "buttonStartTime2", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "buttonEndTime2", "time", title: "Don't talk after (overrides default)", required: (!(settings.buttonStartTime2 == null))
+            input name: "buttonStartTime2", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "buttonEndTime2", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.buttonStartTime2 == null))
         }
         section("Button Group 3"){
             input name: "buttonDeviceGroup3", type: "capability.button", title: "Button(s)", required: false, multiple: true
             input name: "buttonTalkOnPress3", type: "text", title: "Say this when pressed:", required: false
             input name: "buttonSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "buttonModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "buttonStartTime3", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "buttonEndTime3", "time", title: "Don't talk after (overrides default)", required: (!(settings.buttonStartTime3 == null))
+            input name: "buttonStartTime3", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "buttonEndTime3", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.buttonStartTime3 == null))
         }
     }
 //End pageConfigSmoke()
