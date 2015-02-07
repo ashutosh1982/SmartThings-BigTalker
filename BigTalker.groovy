@@ -1,5 +1,5 @@
 /**
- *  BIG TALKER -- Version 1.0.3-Alpha8 -- A SmartApp for SmartThings Home Automation System
+ *  BIG TALKER -- Version 1.0.3-Beta1 -- A SmartApp for SmartThings Home Automation System
  *  Copyright 2014 - rayzur@rayzurbock.com - Brian S. Lowrance
  *  For the latest version, development and test releases visit http://www.github.com/rayzurbock
  *
@@ -37,7 +37,10 @@ definition(
 preferences {
     page(name: "pageStart")
     page(name: "pageStatus")
+    page(name: "pageTalkNow")
     page(name: "pageConfigure")
+    page(name: "pageConfigureDefaults")
+    page(name: "pageConfigureEvents")
     page(name: "pageConfigMotion")
     page(name: "pageConfigSwitch")
     page(name: "pageConfigPresence")
@@ -53,14 +56,16 @@ preferences {
 }
 
 def pageStart(){
-    dynamicPage(name: "pageStart", title: "Big Talker"){
+    dynamicPage(name: "pageStart", title: "Big Talker", install: false, uninstall: state.installed){
         section(){
             href "pageStatus", title:"Status", description:"Tap to view status"
             href "pageConfigure", title:"Configure", description:"Tap to configure"
+            if (state.configOK) { href "pageTalkNow", title:"Talk Now", description:"Tap to setup talk now" }
         }
         section(){
             paragraph "Big Talker is a SmartApp that can make your house talk depending on various triggered events."
-            paragraph "Pair with any SmartThings compatible speech synthesis audio device such as Sonos, VLC Thing on your computer or Raspberry Pi!\n"
+            paragraph "Pair with a SmartThings compatible audio device such as Sonos, Ubi, VLC Thing on your computer or Raspberry Pi!\n"
+            paragraph "You can contribute to the development of this SmartApp by making a PayPal donation to rayzur@rayzurbock.com or visit http://rayzurbock.com/store"
         }
         section(){
             if (!(state.appversion == null)){ 
@@ -78,19 +83,35 @@ def pageStatus(){
         String enabledDevices = ""
         
         //BEGIN STATUS DEFAULTS
-        enabledDevices = "Default Speech Devices:\n"
+        enabledDevices = "Speech Device Mode:\n"
+        enabledDevices += "   "
+        if (state.speechDeviceType == "capability.musicPlayer") {
+            enabledDevices += "musicPlayer (Sonos, VLCThing)"
+        }
+        if (state.speechDeviceType == "capability.speechSynthesis") {
+            enabledDevices += "speechSynthesis (Ubi, VLCThing)"
+        }
+        enabledDevices += "\n\n"
+        enabledDevices += "Default Speech Devices:\n"
         enabledDevices += "   "
         settings.speechDeviceDefault.each(){
             enabledDevices += "${it.displayName},"
         }
         enabledDevices += "\n\n"
         if (settings.speechVolume) {
-            enabledDevices += "Adjust Volume To: ${settings.speechVolume}%\n\n"
+            enabledDevices += "Adjust Volume To: ${settings.speechVolume}%"
+            enabledDevices += "\n\n"
         }
         enabledDevices += "Default Modes:\n"
         enabledDevices += "   "
         settings.speechModesDefault.each(){
             enabledDevices += "${it},"
+        }
+        if (settings.defaultStartTime) {
+            enabledDevices += "\n\n"
+            def defStartTime = getTimeFromDateString(settings.defaultStartTime, true)
+            def defEndTime =  getTimeFromDateString(settings.defaultEndTime, true)
+            enabledDevices += "Default Allowed Talk Time:\n ${defStartTime} - ${defEndTime}"
         }
         section ("Defaults:"){
             paragraph enabledDevices
@@ -126,6 +147,14 @@ def pageStatus(){
                 settings.motionModes1.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.motionStartTime1) {
+                def customStartTime = getTimeFromDateString(settings.motionStartTime1, true)
+                def customEndTime = getTimeFromDateString(settings.motionEndTime1, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Motion Sensor Group 1:"){
@@ -163,6 +192,14 @@ def pageStatus(){
                 settings.motionModes2.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.motionStartTime2) {
+                def customStartTime = getTimeFromDateString(settings.motionStartTime2, true)
+                def customEndTime = getTimeFromDateString(settings.motionEndTime2, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Motion Sensor Group 2:"){
@@ -200,6 +237,14 @@ def pageStatus(){
                 settings.motionModes3.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.motionStartTime3) {
+                def customStartTime = getTimeFromDateString(settings.motionStartTime3, true)
+                def customEndTime = getTimeFromDateString(settings.motionEndTime3, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Motion Sensor Group 3:"){
@@ -238,6 +283,14 @@ def pageStatus(){
                 settings.switchModes1.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.switchStartTime1) {
+                def customStartTime = getTimeFromDateString(settings.switchStartTime1, true)
+                def customEndTime = getTimeFromDateString(settings.switchEndTime1, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Switch Group 1:"){
@@ -275,6 +328,14 @@ def pageStatus(){
                 settings.switchModes2.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.switchStartTime2) {
+                def customStartTime = getTimeFromDateString(settings.switchStartTime2, true)
+                def customEndTime = getTimeFromDateString(settings.switchEndTime2, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Switch Group 2:"){
@@ -312,6 +373,14 @@ def pageStatus(){
                 settings.switchModes3.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.switchStartTime3) {
+                def customStartTime = getTimeFromDateString(settings.switchStartTime3, true)
+                def customEndTime = getTimeFromDateString(settings.switchEndTime3, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Switch Group 3:"){
@@ -350,6 +419,14 @@ def pageStatus(){
                 settings.presModes1.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.presStartTime1) {
+                def customStartTime = getTimeFromDateString(settings.presStartTime1, true)
+                def customEndTime = getTimeFromDateString(settings.presEndTime1, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Presence Group 1:"){
@@ -387,6 +464,14 @@ def pageStatus(){
                 settings.presModes2.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.presStartTime2) {
+                def customStartTime = getTimeFromDateString(settings.presStartTime2, true)
+                def customEndTime = getTimeFromDateString(settings.presEndTime2, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Presence Group 2:"){
@@ -424,6 +509,14 @@ def pageStatus(){
                 settings.presModes3.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.presStartTime3) {
+                def customStartTime = getTimeFromDateString(settings.presStartTime3, true)
+                def customEndTime = getTimeFromDateString(settings.presEndTime3, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Presence Group 3:"){
@@ -462,6 +555,14 @@ def pageStatus(){
                 settings.lockModes1.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.lockStartTime1) {
+                def customStartTime = getTimeFromDateString(settings.lockStartTime1, true)
+                def customEndTime = getTimeFromDateString(settings.lockEndTime1, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Lock Group 1:"){
@@ -499,6 +600,14 @@ def pageStatus(){
                 settings.lockModes2.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.lockStartTime2) {
+                def customStartTime = getTimeFromDateString(settings.lockStartTime2, true)
+                def customEndTime = getTimeFromDateString(settings.lockEndTime2, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Lock Group 2:"){
@@ -536,6 +645,14 @@ def pageStatus(){
                 settings.lockModes3.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.lockStartTime3) {
+                def customStartTime = getTimeFromDateString(settings.lockStartTime3, true)
+                def customEndTime = getTimeFromDateString(settings.lockEndTime3, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Lock Group 3:"){
@@ -575,6 +692,13 @@ def pageStatus(){
                     enabledDevices += "${it},"
                 }
             }
+            if (settings.contactStartTime1) {
+                def customStartTime = getTimeFromDateString(settings.contactStartTime1, true)
+                def customEndTime = getTimeFromDateString(settings.contactEndTime1, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
+            }
             if (!(enabledDevices == "")) {
                 section ("Contact Group 1:"){
                     paragraph enabledDevices
@@ -611,6 +735,14 @@ def pageStatus(){
                 settings.contactModes2.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.contactStartTime2) {
+                def customStartTime = getTimeFromDateString(settings.contactStartTime2, true)
+                def customEndTime = getTimeFromDateString(settings.contactEndTime2, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Contact Group 2:"){
@@ -648,6 +780,14 @@ def pageStatus(){
                 settings.contactModes3.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.contactStartTime3) {
+                def customStartTime = getTimeFromDateString(settings.contactStartTime3, true)
+                def customEndTime = getTimeFromDateString(settings.contactEndTime3, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Contact Group 3:"){
@@ -683,6 +823,14 @@ def pageStatus(){
                 settings.contactSpeechDevice1.each() {
                     enabledDevices += "${it.displayName},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.modeStartTime1) {
+                def customStartTime = getTimeFromDateString(settings.modeStartTime1, true)
+                def customEndTime = getTimeFromDateString(settings.modeEndTime1, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Mode Change:"){
@@ -727,6 +875,14 @@ def pageStatus(){
                 settings.thermostatModes1.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.thermostatStartTime1) {
+                def customStartTime = getTimeFromDateString(settings.thermostatStartTime1, true)
+                def customEndTime = getTimeFromDateString(settings.thermostatEndTime1, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Thermostat Group 1:"){
@@ -765,6 +921,14 @@ def pageStatus(){
                 settings.accelerationModes1.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.accelerationStartTime1) {
+                def customStartTime = getTimeFromDateString(settings.accelerationStartTime1, true)
+                def customEndTime = getTimeFromDateString(settings.accelerationEndTime1, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Acceleration Group 1:"){
@@ -802,6 +966,14 @@ def pageStatus(){
                 settings.accelerationModes2.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.accelerationStartTime2) {
+                def customStartTime = getTimeFromDateString(settings.accelerationStartTime2, true)
+                def customEndTime = getTimeFromDateString(settings.accelerationEndTime2, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Acceleration Group 2:"){
@@ -839,6 +1011,14 @@ def pageStatus(){
                 settings.accelerationModes3.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.accelerationStartTime3) {
+                def customStartTime = getTimeFromDateString(settings.accelerationStartTime3, true)
+                def customEndTime = getTimeFromDateString(settings.accelerationEndTime3, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Acceleration Group 3:"){
@@ -877,6 +1057,14 @@ def pageStatus(){
                 settings.waterModes1.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.waterStartTime1) {
+                def customStartTime = getTimeFromDateString(settings.waterStartTime1, true)
+                def customEndTime = getTimeFromDateString(settings.waterEndTime1, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Water Group 1:"){
@@ -914,6 +1102,14 @@ def pageStatus(){
                 settings.waterModes2.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.waterStartTime2) {
+                def customStartTime = getTimeFromDateString(settings.waterStartTime2, true)
+                def customEndTime = getTimeFromDateString(settings.waterEndTime2, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Water Group 2:"){
@@ -951,6 +1147,14 @@ def pageStatus(){
                 settings.waterModes3.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.waterStartTime3) {
+                def customStartTime = getTimeFromDateString(settings.waterStartTime3, true)
+                def customEndTime = getTimeFromDateString(settings.waterEndTime3, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Water Group 3:"){
@@ -992,6 +1196,14 @@ def pageStatus(){
                 settings.smokeModes1.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.smokeStartTime1) {
+                def customStartTime = getTimeFromDateString(settings.smokeStartTime1, true)
+                def customEndTime = getTimeFromDateString(settings.smokeEndTime1, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Smoke Group 1:"){
@@ -1032,6 +1244,14 @@ def pageStatus(){
                 settings.smokeModes2.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.smokeStartTime2) {
+                def customStartTime = getTimeFromDateString(settings.smokeStartTime2, true)
+                def customEndTime = getTimeFromDateString(settings.smokeEndTime2, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Smoke Group 2:"){
@@ -1072,6 +1292,14 @@ def pageStatus(){
                 settings.smokeModes3.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.smokeStartTime3) {
+                def customStartTime = getTimeFromDateString(settings.smokeStartTime3, true)
+                def customEndTime = getTimeFromDateString(settings.smokeEndTime3, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Smoke Group 3:"){
@@ -1107,6 +1335,14 @@ def pageStatus(){
                 settings.buttonModes1.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.buttonStartTime1) {
+                def customStartTime = getTimeFromDateString(settings.buttonStartTime1, true)
+                def customEndTime = getTimeFromDateString(settings.buttonEndTime1, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Button Group 1:"){
@@ -1141,6 +1377,14 @@ def pageStatus(){
                 settings.buttonModes2.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.buttonStartTime2) {
+                def customStartTime = getTimeFromDateString(settings.buttonStartTime2, true)
+                def customEndTime = getTimeFromDateString(settings.buttonEndTime2, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Button Group 2:"){
@@ -1175,6 +1419,14 @@ def pageStatus(){
                 settings.buttonModes3.each() {
                     enabledDevices += "${it},"
                 }
+                enabledDevices += "\n\n"
+            }
+            if (settings.buttonStartTime3) {
+                def customStartTime = getTimeFromDateString(settings.buttonStartTime3, true)
+                def customEndTime = getTimeFromDateString(settings.buttonEndTime3, true)
+                enabledDevices += "Custom Allowed Talk Time:\n ${customStartTime} - ${customEndTime}"
+                customStartTime = ""
+                customEndTime = ""
             }
             if (!(enabledDevices == "")) {
                 section ("Button Group 3:"){
@@ -1187,19 +1439,62 @@ def pageStatus(){
     }
 }
 
+def pageTalkNow(){
+    dynamicPage(name: "pageTalkNow", title: "Talk Now", install: false, uninstall: false){
+        section(""){
+            paragraph ("Speak the following phrase after selecting speech device OR pressing Done\nNote: must differ from the last spoken phrase\n")
+            input name: "speechTalkNow", type: text, title: "Speak phrase", required: false, refreshAfterSelection: true
+            input name: "talkNowSpeechDevice", type: state.speechDeviceType, title: "Talk with these text-to-speech devices", multiple: true, required: (!(settings.speechTalkNow == null)), refreshAfterSelection: true
+            //LOGDEBUG("previoustext=${state.lastTalkNow} New=${settings.speechTalkNow}")
+            if ((!(state.lastTalkNow == settings.speechTalkNow)) && (settings.talkNowSpeechDevice)){
+                //Say stuff!
+                def customevent = [displayName: 'BigTalker:TalkNow', name: 'TalkNow', value: 'TalkNow']
+                Talk(settings.speechTalkNow, settings.talkNowSpeechDevice, customevent)
+                state.lastTalkNow = settings.speechTalkNow
+            }
+        }
+    }
+}
+
 def pageConfigure(){
-    if (state.installed == null) { state.installed = false }
-    dynamicPage(name: "pageConfigure", title: "Configure", install: true, uninstall: true) {
-        section ("Talk with:"){
-            //input "speechDeviceDefault", "capability.speechSynthesis", title: "Talk with these text-to-speech devices (default)", multiple: true, required: false, refreshAfterSelection: false
-            input "speechDeviceDefault", "capability.musicPlayer", title: "Talk with these text-to-speech devices (default)", multiple: true, required: true, refreshAfterSelection: false
+    if (state.installed == null) { state.installed = false; state.speechDeviceType = "capability.musicPlayer"}
+    dynamicPage(name: "pageConfigure", title: "Configure", nextPage: "pageConfigureDefaults", install: false, uninstall: false) {
+        section ("Speech Device Type Support"){
+            paragraph "${app.label} can support either 'Music Player' or 'Speech Synthesis' devices."
+            paragraph "'Music Player' typically supports devices such as Sonos and VLCThing.\n\n'Speech Synthesis' typically supports devices such as Ubi and VLCThing."
+            paragraph "Set to ON for 'Music Player' support, OFF for 'Speech Synthesis' support"
+            input "speechDeviceType", "bool", title: "ON=Sonos/VLCThing, OFF=Ubi/VLCThing", required: true, defaultValue: true, refreshAfterSelection: true
+            paragraph "\nClick Next (top right) to continue configuration...\n"
+            if (speechDeviceType == true) {state.speechDeviceType = "capability.musicPlayer"}
+            if (speechDeviceType == false) {state.speechDeviceType = "capability.speechSynthesis"}
+        }
+    }
+//End pageConfigure()
+}
+
+def pageConfigureDefaults(){
+    dynamicPage(name: "pageConfigureDefaults", title: "Configure Defaults", nextPage: "pageConfigureEvents", install: false, uninstall: false) {
+        section("Talk with:"){
+           input "speechDeviceDefault", state.speechDeviceType, title: "Talk with these text-to-speech devices (default)", multiple: true, required: true, refreshAfterSelection: false
         }
         section ("Adjust volume during announcement (optional; Supports: Sonos, VLC-Thing):"){
             input "speechVolume", "number", title: "Set volume to (1-100%):", required: false
         }
-        section ("When in these modes:"){
+        section ("Talk only while in these modes:"){
             input "speechModesDefault", "mode", title: "Talk only while in these modes (default)", multiple: true, required: true, refreshAfterSelection: false
         }
+        section ("Only between these times:"){
+            input "defaultStartTime", "time", title: "Don't talk before: ", required: false, refreshAfterSelection: true
+            input "defaultEndTime", "time", title: "Don't talk after: ", required: (!(settings.defaultStartTime == null)), refreshAfterSelection: true
+        }
+        section(){
+            paragraph "\nClick Next (top right) to continue configuration...\n"
+        }
+    }
+}
+
+def pageConfigureEvents(){
+    dynamicPage(name: "pageConfigureEvents", title: "Configure Events", install: true, uninstall: false) {
         section("Talk on events:") {
             href "pageConfigMotion", title:"Motion", description:"Tap to configure"
             href "pageConfigSwitch", title:"Switch", description:"Tap to configure"
@@ -1213,36 +1508,43 @@ def pageConfigure(){
             href "pageConfigSmoke", title: "Smoke", description:"Tap to configure"
             href "pageConfigButton", title: "Button", description:"Tap to configure"
         }
-//        section([mobileOnly:true]){
-//            label title: "SmartApp Name (Front Door Left Open)", required: true
-//            mode title: "Set for specific mode(s)", required: false
-//        }
     }
-//End pageConfigure()
 }
 
 def pageConfigMotion(){
     dynamicPage(name: "pageConfigMotion", title: "Configure talk on motion", install: false, uninstall: false) {
         section("Motion Sensor Group 1"){
+            def defaultSpeechActive1 = ""
+            def defaultSpeechInactive1 = ""
+            if (!motionDeviceGroup1) {
+                defaultSpeechActive1 = "%devicename% is now %devicechange%"
+                defaultSpeechInactive1 = "%devicename% is now %devicechange%"
+            }
             input name: "motionDeviceGroup1", type: "capability.motionSensor", title: "Motion Sensor(s)", required: false, multiple: true
-            input name: "motionTalkActive1", type: "text", title: "Say this on motion active:", required: false, defaultValue: "%devicename% is now %devicechange%"
-            input name: "motionTalkInactive1", type: "text", title: "Say this on motion inactive:", required: false, defaultValue: "%devicename% is now %devicechange%"
-            input name: "motionSpeechDevice1", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "motionTalkActive1", type: "text", title: "Say this on motion active:", required: false, defaultValue: defaultSpeechActive1
+            input name: "motionTalkInactive1", type: "text", title: "Say this on motion inactive:", required: false, defaultValue: defaultSpeechInactive1
+            input name: "motionSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "motionModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "motionStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "motionEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.motionStartTime1 == null))
         }
         section("Motion Sensor Group 2"){
             input name: "motionDeviceGroup2", type: "capability.motionSensor", title: "Motion Sensor(s)", required: false, multiple: true
             input name: "motionTalkActive2", type: "text", title: "Say this on motion active:", required: false
             input name: "motionTalkInactive2", type: "text", title: "Say this on motion inactive:", required: false
-            input name: "motionSpeechDevice2", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "motionSpeechDevice2", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "motionModes2", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "motionStartTime2", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "motionEndTime2", "time", title: "Don't talk after (overrides default)", required: (!(settings.motionStartTime2 == null))
         }
         section("Motion Sensor Group 3"){
             input name: "motionDeviceGroup3", type: "capability.motionSensor", title: "Motion Sensor(s)", required: false, multiple: true
             input name: "motionTalkActive3", type: "text", title: "Say this on motion active:", required: false
             input name: "motionTalkInactive3", type: "text", title: "Say this on motion inactive:", required: false
-            input name: "motionSpeechDevice3", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "motionSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "motionModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "motionStartTime3", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "motionEndTime3", "time", title: "Don't talk after (overrides default)", required: (!(settings.motionStartTime3 == null))
         }
     }
 //End pageConfigMotion()
@@ -1251,25 +1553,37 @@ def pageConfigMotion(){
 def pageConfigSwitch(){
     dynamicPage(name: "pageConfigSwitch", title: "Configure talk on switch", install: false, uninstall: false) {
         section("Switch Group 1"){
+            def defaultSpeechOn1 = ""
+            def defaultSpeechOff1 = ""
+            if (!switchDeviceGroup1) {
+                defaultSpeechOn1 = "%devicename% is now %devicechange%"
+                defaultSpeechOff1 = "%devicename% is now %devicechange%"
+            }
             input name: "switchDeviceGroup1", type: "capability.switch", title: "Switch(es)", required: false, multiple: true
-            input name: "switchTalkOn1", type: "text", title: "Say this when switch is turned ON:", required: false, defaultValue: "%devicename% is now %devicechange%"
-            input name: "switchTalkOff1", type: "text", title: "Say this when switch is turned OFF:", required: false, defaultValue: "%devicename% is now %devicechange%"
-            input name: "switchSpeechDevice1", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "switchTalkOn1", type: "text", title: "Say this when switch is turned ON:", required: false, defaultValue: defaultSpeechOn1
+            input name: "switchTalkOff1", type: "text", title: "Say this when switch is turned OFF:", required: false, defaultValue: defaultSpeechOff1
+            input name: "switchSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "switchModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "switchStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "switchEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.switchStartTime1 == null))
         }
         section("Switch Group 2"){
             input name: "switchDeviceGroup2", type: "capability.switch", title: "Switch(es)", required: false, multiple: true
             input name: "switchTalkOn2", type: "text", title: "Say this when switch is turned ON:", required: false
             input name: "switchTalkOff2", type: "text", title: "Say this when switch is turned OFF:", required: false
-            input name: "switchSpeechDevice2", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "switchSpeechDevice2", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "switchModes2", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "switchStartTime2", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "switchEndTime2", "time", title: "Don't talk after (overrides default)", required: (!(settings.switchStartTime2 == null))
         }
         section("Switch Group 3"){
             input name: "switchDeviceGroup3", type: "capability.switch", title: "Switch(es)", required: false, multiple: true
             input name: "switchTalkOn3", type: "text", title: "Say this when switch is turned ON:", required: false
             input name: "switchTalkOff3", type: "text", title: "Say this when switch is turned OFF:", required: false
-            input name: "switchSpeechDevice3", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "switchSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "switchModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "switchStartTime3", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "switchEndTime3", "time", title: "Don't talk after (overrides default)", required: (!(settings.switchStartTime3 == null))
         }
     }
 //End pageConfigSwitch()
@@ -1278,25 +1592,37 @@ def pageConfigSwitch(){
 def pageConfigPresence(){
     dynamicPage(name: "pageConfigPresence", title: "Configure talk on presence", install: false, uninstall: false) {
         section("Presence Group 1"){
+            def defaultSpeechArrive1 = ""
+            def defaultSpeechLeave1 = ""
+            if (!presDeviceGroup1) {
+                defaultSpeechArrive1 = "%devicename% has arrived"
+                defaultSpeechLeave1 = "%devicename% has left"
+            }
             input name: "presDeviceGroup1", type: "capability.presenceSensor", title: "Presence Sensor(s)", required: false, multiple: true
-            input name: "presTalkOnArrive1", type: "text", title: "Say this when someone arrives:", required: false, defaultValue: "%devicename% has arrived"
-            input name: "presTalkOnLeave1", type: "text", title: "Say this when someone leaves:", required: false, defaultValue: "%devicename% has left"
-            input name: "presSpeechDevice1", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "presTalkOnArrive1", type: "text", title: "Say this when someone arrives:", required: false, defaultValue: defaultSpeechArrive1
+            input name: "presTalkOnLeave1", type: "text", title: "Say this when someone leaves:", required: false, defaultValue: defaultSpeechLeave1
+            input name: "presSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "presModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "presStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "presEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.presStartTime1 == null))
         }
         section("Presence Group 2"){
             input name: "presDeviceGroup2", type: "capability.presenceSensor", title: "Presence Sensor(s)", required: false, multiple: true
             input name: "presTalkOnArrive2", type: "text", title: "Say this when someone arrives:", required: false
             input name: "presTalkOnLeave2", type: "text", title: "Say this when someone leaves:", required: false
-            input name: "presSpeechDevice2", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "presSpeechDevice2", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "presModes2", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "presStartTime2", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "presEndTime2", "time", title: "Don't talk after (overrides default)", required: (!(settings.presStartTime2 == null))
         }
         section("Presence Group 3"){
             input name: "presDeviceGroup3", type: "capability.presenceSensor", title: "Presence Sensor(s)", required: false, multiple: true
             input name: "presTalkOnArrive3", type: "text", title: "Say this when someone arrives:", required: false
             input name: "presTalkOnLeave3", type: "text", title: "Say this when someone leaves:", required: false
-            input name: "presSpeechDevice3", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "presSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "presModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "presStartTime3", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "presEndTime3", "time", title: "Don't talk after (overrides default)", required: (!(settings.presStartTime3 == null))
         }
     }
 //End pageConfigPresence()
@@ -1305,25 +1631,37 @@ def pageConfigPresence(){
 def pageConfigLock(){
     dynamicPage(name: "pageConfigLock", title: "Configure talk on lock", install: false, uninstall: false) {
         section("Lock Group 1"){
+            def defaultSpeechUnlock1 = ""
+            def defaultSpeechLock1 = ""
+            if (!lockDeviceGroup1) {
+                defaultSpeechUnlock1 = "%devicename% is now %devicechange%"
+                defaultSpeechLock1 = "%devicename% is now %devicechange%"
+            }
             input name: "lockDeviceGroup1", type: "capability.lock", title: "Lock(s)", required: false, multiple: true
-            input name: "lockTalkOnUnlock1", type: "text", title: "Say this when unlocked:", required: false, defaultValue: "%devicename% is now %devicechange%"
-            input name: "lockTalkOnLock1", type: "text", title: "Say this when locked:", required: false, defaultValue: "%devicename% is now %devicechange%"
-            input name: "lockSpeechDevice1", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "lockTalkOnUnlock1", type: "text", title: "Say this when unlocked:", required: false, defaultValue: defaultSpeechUnlock1
+            input name: "lockTalkOnLock1", type: "text", title: "Say this when locked:", required: false, defaultValue: defaultSpeechLock1
+            input name: "lockSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "lockModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "lockStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "lockEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.lockStartTime1 == null))
         }
         section("Lock Group 2"){
             input name: "lockDeviceGroup2", type: "capability.lock", title: "Lock(s)", required: false, multiple: true
             input name: "lockTalkOnUnlock2", type: "text", title: "Say this when unlocked:", required: false
             input name: "lockTalkOnLock2", type: "text", title: "Say this when locked:", required: false
-            input name: "lockSpeechDevice2", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "lockSpeechDevice2", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "lockModes2", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "lockStartTime2", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "lockEndTime2", "time", title: "Don't talk after (overrides default)", required: (!(settings.lockStartTime2 == null))
         }
         section("Lock Group 3"){
             input name: "lockDeviceGroup3", type: "capability.lock", title: "Lock(s)", required: false, multiple: true
             input name: "lockTalkOnUnlock3", type: "text", title: "Say this when unlocked:", required: false
             input name: "lockTalkOnLock3", type: "text", title: "Say this when locked:", required: false
-            input name: "lockSpeechDevice3", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "lockSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "lockModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "lockStartTime3", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "lockEndTime3", "time", title: "Don't talk after (overrides default)", required: (!(settings.lockStartTime3 == null))
         }
     }
 //End pageConfigLock()
@@ -1332,25 +1670,37 @@ def pageConfigLock(){
 def pageConfigContact(){
     dynamicPage(name: "pageConfigContact", title: "Configure talk on contact sensor", install: false, uninstall: false) {
         section("Contact Group 1"){
+            def defaultSpeechOpen1 = ""
+            def defaultSpeechClose1 = ""
+            if (!contactDeviceGroup1) {
+                defaultSpeechOpen1 = "%devicename% is now %devicechange%"
+                defaultSpeechClose1 = "%devicename% is now %devicechange%"
+            }
             input name: "contactDeviceGroup1", type: "capability.contactSensor", title: "Contact sensor(s)", required: false, multiple: true
-            input name: "contactTalkOnOpen1", type: "text", title: "Say this when opened:", required: false, defaultValue: "%devicename% is now %devicechange%"
-            input name: "contactTalkOnClose1", type: "text", title: "Say this when closed:", required: false, defaultValue: "%devicename% is now %devicechange%"
-            input name: "contactSpeechDevice1", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "contactTalkOnOpen1", type: "text", title: "Say this when opened:", required: false, defaultValue: defaultSpeechOpen1
+            input name: "contactTalkOnClose1", type: "text", title: "Say this when closed:", required: false, defaultValue: defaultSpeechClose1
+            input name: "contactSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "contactModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "contactStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "contactEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.contactStartTime1 == null))
         }
         section("Contact Group 2"){
             input name: "contactDeviceGroup2", type: "capability.contactSensor", title: "Contact sensor(s)", required: false, multiple: true
             input name: "contactTalkOnOpen2", type: "text", title: "Say this when opened:", required: false
             input name: "contactTalkOnClose2", type: "text", title: "Say this when closed:", required: false
-            input name: "contactSpeechDevice2", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "contactSpeechDevice2", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "contactModes2", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "contactStartTime2", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "contactEndTime2", "time", title: "Don't talk after (overrides default)", required: (!(settings.contactStartTime2 == null))
         }
         section("Contact Group 3"){
             input name: "contactDeviceGroup3", type: "capability.contactSensor", title: "Contact sensor(s)", required: false, multiple: true
             input name: "contactTalkOnOpen3", type: "text", title: "Say this when opened:", required: false
             input name: "contactTalkOnClose3", type: "text", title: "Say this when closed:", required: false
-            input name: "contactSpeechDevice3", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "contactSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "contactModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "contactStartTime3", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "contactEndTime3", "time", title: "Don't talk after (overrides default)", required: (!(settings.contactStartTime3 == null))
         }
     }
 //End pageConfigContact()
@@ -1364,12 +1714,16 @@ def pageConfigMode(){
     LOGDEBUG("locationmodes=${locationmodes}")
     dynamicPage(name: "pageConfigMode", title: "Configure talk on home mode change", install: false, uninstall: false) {
         section("Mode Group 1"){
-            //input name: "modePhraseGroup1", type:"enum", title:"When mode changes to: ", options:locationmodes, required:false, multiple:true, refreshAfterSelection:true
-            //input name: "modePhraseGroup1", type:"enum", title:"When mode changes to: ", metadata:[values:(locationmodes)], required:false, multiple:true, refreshAfterSelection:true
+            def defaultSpeechMode1 = ""
+            if (!modePhraseGroup1) {
+                defaultSpeechMode1 = "%locationname% mode has changed from %lastmode% to %mode%"
+            }
             input name: "modePhraseGroup1", type:"mode", title:"When mode changes to: ", required:false, multiple:true, refreshAfterSelection:false
             input name: "modeExcludePhraseGroup1", type: "mode", title: "But not when changed from (optional): ", required: false, multiple: true
-            input name: "TalkOnModeChange1", type: "text", title: "Say this when home mode is changed", required: false, defaultValue: "%locationname% mode has changed from %lastmode% to %mode%"
-            input name: "modePhraseSpeechDevice1", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "TalkOnModeChange1", type: "text", title: "Say this when home mode is changed", required: false, defaultValue: defaultSpeechMode1
+            input name: "modePhraseSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "modeStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "modeEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.modeStartTime1 == null))
         }
     }
 //End pageConfigMode()
@@ -1377,55 +1731,65 @@ def pageConfigMode(){
 
 def pageConfigThermostat(){
     dynamicPage(name: "pageConfigThermostat", title: "Configure talk when thermostat state is:", install: false, uninstall: false) {
-        section("Contact Group 1"){
+        section("Thermostat Group 1"){
+            def defaultSpeechIdle1 = ""
+            def defaultSpeechHeating1 = ""
+            def defaultSpeechCooling1 = ""
+            def defaultSpeechFan1 = ""
+            if (!thermostatDeviceGroup1) {
+                defaultSpeechIdle1 = "%devicename% is now off"
+                defaultSpeechHeating1 = "%devicename% is now heating"
+                defaultSpeechCooling1 = "%devicename% is now cooling"
+                defaultSpeechFan1 = "%devicename% is now circulating fan"
+            }
             input name: "thermostatDeviceGroup1", type: "capability.thermostat", title: "Thermostat(s)", required: false, multiple: true
-            input name: "thermostatTalkOnIdle1", type: "text", title: "Say this on change to Idle:", required: false, defaultValue: "%devicename% is now off"
-            input name: "thermostatTalkOnHeating1", type: "text", title: "Say this on change to heating:", required: false, defaultValue: "%devicename% is now heating"
-            input name: "thermostatTalkOnCooling1", type: "text", title: "Say this on change to cooling:", required: false, defaultValue: "%devicename% is now cooling"
-            input name: "thermostatTalkOnFan1", type: "text", title: "Say this on change to fan only:", required: false, defaultValue: "%devicename% is now circulating fan"
-            input name: "thermostatSpeechDevice1", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "thermostatTalkOnIdle1", type: "text", title: "Say this on change to Idle:", required: false, defaultValue: defaultSpeechIdle1
+            input name: "thermostatTalkOnHeating1", type: "text", title: "Say this on change to heating:", required: false, defaultValue: defaultSpeechHeating1
+            input name: "thermostatTalkOnCooling1", type: "text", title: "Say this on change to cooling:", required: false, defaultValue: defaultSpeechCooling1
+            input name: "thermostatTalkOnFan1", type: "text", title: "Say this on change to fan only:", required: false, defaultValue: defaultSpeechFan1
+            input name: "thermostatSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "thermostatModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "thermostatStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "thermostatEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.thermostatStartTime1 == null))
         }
-/*        
-        section("Contact Group 2"){
-            input name: "contactDeviceGroup2", type: "capability.contactSensor", title: "Contact sensor(s)", required: false, multiple: true
-            input name: "contactTalkOnOpen2", type: "text", title: "Say this when opened:", required: false, defaultValue: "%devicename% is now %devicechange%"
-            input name: "contactTalkOnClose2", type: "text", title: "Say this when closed:", required: false, defaultValue: "%devicename% is now %devicechange%"
-            input name: "contactSpeechDevice2", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
-        }
-        section("Contact Group 3"){
-            input name: "contactDeviceGroup3", type: "capability.contactSensor", title: "Contact sensor(s)", required: false, multiple: true
-            input name: "contactTalkOnOpen3", type: "text", title: "Say this when opened:", required: false, defaultValue: "%devicename% is now %devicechange%"
-            input name: "contactTalkOnClose3", type: "text", title: "Say this when closed:", required: false, defaultValue: "%devicename% is now %devicechange%"
-            input name: "contactSpeechDevice3", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
-        }
-*/
     }
-//End pageConfigContact()
+//End pageConfigThermostat()
 }
 
 def pageConfigAcceleration(){
     dynamicPage(name: "pageConfigAcceleration", title: "Configure talk on acceleration", install: false, uninstall: false) {
         section("Acceleration Group 1"){
+            def defaultSpeechActive1 = ""
+            def defaultSpeechInactive1 = ""
+            if (!accelerationDeviceGroup1) {
+                defaultSpeechActive1 = "%devicename% acceleration %devicechange%"
+                defaultSpeechInactive1 = "%devicename% acceleration is no longer active"
+            }
             input name: "accelerationDeviceGroup1", type: "capability.accelerationSensor", title: "Acceleration sensor(s)", required: false, multiple: true
-            input name: "accelerationTalkOnActive1", type: "text", title: "Say this when activated:", required: false, defaultValue: "%devicename% acceleration %devicechange%"
-            input name: "accelerationTalkOnInactive1", type: "text", title: "Say this when inactivated:", required: false, defaultValue: "%devicename% acceleration is no longer active"
-            input name: "accelerationSpeechDevice1", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "accelerationTalkOnActive1", type: "text", title: "Say this when activated:", required: false, defaultValue: defaultSpeechActive1
+            input name: "accelerationTalkOnInactive1", type: "text", title: "Say this when inactivated:", required: false, defaultValue: defaultSpeechInactive1
+            input name: "accelerationSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "accelerationModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "accelerationStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "accelerationEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.accelerationStartTime1 == null))
         }
         section("Acceleration Group 2"){
             input name: "accelerationDeviceGroup2", type: "capability.accelerationSensor", title: "Acceleration sensor(s)", required: false, multiple: true
             input name: "accelerationTalkOnActive2", type: "text", title: "Say this when activated:", required: false
             input name: "accelerationTalkOnInactive2", type: "text", title: "Say this when inactivated:", required: false
-            input name: "accelerationSpeechDevice2", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "accelerationSpeechDevice2", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "accelerationModes2", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "accelerationStartTime2", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "accelerationEndTime2", "time", title: "Don't talk after (overrides default)", required: (!(settings.accelerationStartTime2 == null))
         }
         section("Acceleration Group 3"){
             input name: "accelerationDeviceGroup3", type: "capability.accelerationSensor", title: "Acceleration sensor(s)", required: false, multiple: true
             input name: "accelerationTalkOnActive3", type: "text", title: "Say this when activated:", required: false
             input name: "accelerationTalkOnInactive3", type: "text", title: "Say this when inactivated:", required: false
-            input name: "accelerationSpeechDevice3", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "accelerationSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "accelerationModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "accelerationStartTime3", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "accelerationEndTime3", "time", title: "Don't talk after (overrides default)", required: (!(settings.accelerationStartTime3 == null))
         }
     }
 //End pageConfigAcceleration()
@@ -1434,25 +1798,37 @@ def pageConfigAcceleration(){
 def pageConfigWater(){
     dynamicPage(name: "pageConfigWater", title: "Configure talk on water", install: false, uninstall: false) {
         section("Water Group 1"){
+            def defaultSpeechWet1 = ""
+            def defaultSpeechDry1 = ""
+            if (!waterDeviceGroup1) {
+                defaultSpeechWet1 = "%devicename% acceleration %devicechange%"
+                defaultSpeechDry1 = "%devicename% acceleration is no longer active"
+            }
             input name: "waterDeviceGroup1", type: "capability.waterSensor", title: "Water sensor(s)", required: false, multiple: true
-            input name: "waterTalkOnWet1", type: "text", title: "Say this when wet:", required: false, defaultValue: "%devicename% is now %devicechange%"
-            input name: "waterTalkOnDry1", type: "text", title: "Say this when dry:", required: false, defaultValue: "%devicename% is now %devicechange%"
-            input name: "waterSpeechDevice1", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "waterTalkOnWet1", type: "text", title: "Say this when wet:", required: false, defaultValue: defaultSpeechWet1
+            input name: "waterTalkOnDry1", type: "text", title: "Say this when dry:", required: false, defaultValue: defaultSpeechDry1
+            input name: "waterSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "waterModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "waterStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "waterEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.waterStartTime1 == null))
         }
         section("Water Group 2"){
             input name: "waterDeviceGroup2", type: "capability.waterSensor", title: "Water sensor(s)", required: false, multiple: true
             input name: "waterTalkOnWet2", type: "text", title: "Say this when wet:", required: false
             input name: "waterTalkOnDry2", type: "text", title: "Say this when dry:", required: false
-            input name: "waterSpeechDevice2", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "waterSpeechDevice2", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "waterModes2", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "waterStartTime2", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "waterEndTime2", "time", title: "Don't talk after (overrides default)", required: (!(settings.waterStartTime2 == null))
         }
         section("Water Group 3"){
             input name: "waterDeviceGroup3", type: "capability.waterSensor", title: "Water sensor(s)", required: false, multiple: true
             input name: "waterTalkOnWet3", type: "text", title: "Say this when wet:", required: false
             input name: "waterTalkOnDry3", type: "text", title: "Say this when dry:", required: false
-            input name: "waterSpeechDevice3", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "waterSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "waterModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "waterStartTime3", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "waterEndTime3", "time", title: "Don't talk after (overrides default)", required: (!(settings.waterStartTime3 == null))
         }
     }
 //End pageConfigWater()
@@ -1461,28 +1837,42 @@ def pageConfigWater(){
 def pageConfigSmoke(){
     dynamicPage(name: "pageConfigSmoke", title: "Configure talk on smoke", install: false, uninstall: false) {
         section("Smoke Group 1"){
+            def defaultSpeechDetect1 = ""
+            def defaultSpeechClear1 = ""
+            def defaultSpeechTest1 = ""
+            if (!smokeDeviceGroup1) {
+                defaultSpeechDetect1 = "Smoke, %devicename% has detected smoke"
+                defaultSpeechClear1 = "Smoke, %devicename% has cleared smoke alert"
+                defaultSpeechTest1 = "Smoke, %devicename% has been tested"
+            }
             input name: "smokeDeviceGroup1", type: "capability.smokeDetector", title: "Smoke detector(s)", required: false, multiple: true
-            input name: "smokeTalkOnDetect1", type: "text", title: "Say this when detected:", required: false, defaultValue: "Smoke, %devicename% has detected smoke"
-            input name: "smokeTalkOnClear1", type: "text", title: "Say this when cleared:", required: false, defaultValue: "Smoke, %devicename% has cleared smoke alert"
-            input name: "smokeTalkOnTest1", type: "text", title: "Say this when tested:", required: false, defaultValue: "Smoke, %devicename% has been tested"
-            input name: "smokeSpeechDevice1", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "smokeTalkOnDetect1", type: "text", title: "Say this when detected:", required: false, defaultValue: defaultSpeechDetect1
+            input name: "smokeTalkOnClear1", type: "text", title: "Say this when cleared:", required: false, defaultValue: defaultSpeechClear1
+            input name: "smokeTalkOnTest1", type: "text", title: "Say this when tested:", required: false, defaultValue: defaultSpeechTest1
+            input name: "smokeSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "smokeModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "smokeStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "smokeEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.smokeStartTime1 == null))
         }
         section("Smoke Group 2"){
             input name: "smokeDeviceGroup2", type: "capability.smokeDetector", title: "Smoke detector(s)", required: false, multiple: true
             input name: "smokeTalkOnDetect2", type: "text", title: "Say this when detected:", required: false
             input name: "smokeTalkOnClear2", type: "text", title: "Say this when cleared:", required: false
             input name: "smokeTalkOnTest2", type: "text", title: "Say this when tested:", required: false
-            input name: "smokeSpeechDevice2", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "smokeSpeechDevice2", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "smokeModes2", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "smokeStartTime2", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "smokeEndTime2", "time", title: "Don't talk after (overrides default)", required: (!(settings.smokeStartTime2 == null))
         }
         section("Smoke Group 3"){
             input name: "smokeDeviceGroup3", type: "capability.smokeDetector", title: "Smoke detector(s)", required: false, multiple: true
             input name: "smokeTalkOnDetect3", type: "text", title: "Say this when detected:", required: false
             input name: "smokeTalkOnClear3", type: "text", title: "Say this when cleared:", required: false
             input name: "smokeTalkOnTest3", type: "text", title: "Say this when tested:", required: false
-            input name: "smokeSpeechDevice3", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "smokeSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "smokeModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "smokeStartTime3", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "smokeEndTime3", "time", title: "Don't talk after (overrides default)", required: (!(settings.smokeStartTime3 == null))
         }
     }
 //End pageConfigSmoke()
@@ -1491,22 +1881,32 @@ def pageConfigSmoke(){
 def pageConfigButton(){
     dynamicPage(name: "pageConfigButton", title: "Configure talk on button press", install: false, uninstall: false) {
         section("Button Group 1"){
+            def defaultSpeechButton1 = ""
+            if (!buttonDeviceGroup1) {
+                defaultSpeechButton1 = "%devicename% button pressed"
+            }
             input name: "buttonDeviceGroup1", type: "capability.button", title: "Button(s)", required: false, multiple: true
-            input name: "buttonTalkOnPress1", type: "text", title: "Say this when pressed:", required: false, defaultValue: "%devicename% button pressed"
-            input name: "buttonSpeechDevice1", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "buttonTalkOnPress1", type: "text", title: "Say this when pressed:", required: false, defaultValue: defaultSpeechButton1
+            input name: "buttonSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "buttonModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "buttonStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "buttonEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.buttonStartTime1 == null))
         }
         section("Button Group 2"){
             input name: "buttonDeviceGroup2", type: "capability.button", title: "Button(s)", required: false, multiple: true
             input name: "buttonTalkOnPress2", type: "text", title: "Say this when pressed:", required: false
-            input name: "buttonSpeechDevice2", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "buttonSpeechDevice2", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "buttonModes2", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "buttonStartTime2", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "buttonEndTime2", "time", title: "Don't talk after (overrides default)", required: (!(settings.buttonStartTime2 == null))
         }
         section("Button Group 3"){
             input name: "buttonDeviceGroup3", type: "capability.button", title: "Button(s)", required: false, multiple: true
             input name: "buttonTalkOnPress3", type: "text", title: "Say this when pressed:", required: false
-            input name: "buttonSpeechDevice3", type: "capability.musicPlayer", title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "buttonSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "buttonModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+            input name: "buttonStartTime3", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "buttonEndTime3", "time", title: "Don't talk after (overrides default)", required: (!(settings.buttonStartTime3 == null))
         }
     }
 //End pageConfigSmoke()
@@ -1515,21 +1915,47 @@ def pageConfigButton(){
 def installed() {
 	state.installed = true
     LOGTRACE("Installed with settings: ${settings}")
-
 	initialize()
 //End installed()
 }
 
 def updated() {
 	LOGTRACE("Updated with settings: ${settings}")
-
 	unsubscribe()
 	initialize()
 //End updated()
 }
 
+def checkConfig() {
+    state.configErrorList = ""
+    if (!(state.speechDeviceType)){
+       state.speechDeviceType = "capability.musicPlayer" //Set a default if the app was update and didn't contain settings.speechDeviceType.
+    }
+    if (!(settings.speechDeviceDefault)){
+        state.configErrorList += "  ** Default speech device(s) not selected\n"
+    }
+    if (!(state.configErrorList == "")) { 
+        LOGDEBUG ("checkConfig() returning FALSE")
+        state.ConfigOK = false
+        return false //Errors occurred.  Config check failed.
+    } else {
+        LOGDEBUG ("checkConfig() returning TRUE")
+        state.configOK = true
+        return true
+    }
+}
+
 def initialize() {
     setAppVersion()
+if (!(checkConfig())) { 
+        def msg = ""
+        msg = "ERROR: App not properly configured!  Can't start.\n"
+        msg += "ERRORs:\n${state.configErrorList}"
+        LOGTRACE(msg)
+        sendNotificationEvent(msg)
+        return //App not properly configured, exit, don't subscribe
+    }
+        
     //Subscribe Motions
     if (motionDeviceGroup1) { subscribe(motionDeviceGroup1, "motion", onMotion1Event) }
     if (motionDeviceGroup2) { subscribe(motionDeviceGroup2, "motion", onMotion2Event) }
@@ -1550,6 +1976,7 @@ def initialize() {
     if (contactDeviceGroup1) { subscribe(contactDeviceGroup1, "contact", onContact1Event) }
     if (contactDeviceGroup2) { subscribe(contactDeviceGroup2, "contact", onContact2Event) }
     if (contactDeviceGroup3) { subscribe(contactDeviceGroup3, "contact", onContact3Event) }
+    def contact1StartTime = settings.contact1StartTime ?: null
     //Subscribe Thermostat
     if (thermostatDeviceGroup1) { subscribe(thermostatDeviceGroup1, "thermostatOperatingState", onThermostat1Event) }
     if (thermostatDeviceGroup2) { subscribe(thermostatDeviceGroup2, "thermostatOperatingState", onThermostat2Event) }
@@ -1573,6 +2000,8 @@ def initialize() {
     //Subscribe Mode
     if (modePhraseGroup1) { subscribe(location, onModeChangeEvent) }
     state.lastMode = location.mode
+    //Clear TalkNow
+    state.lastTalkNow = ""
 	LOGTRACE("Initialized")
     
 //End initialize()
@@ -1591,9 +2020,14 @@ def onMotion3Event(evt){
 
 def processMotionEvent(index, evt){
     LOGDEBUG("(onMotionEvent): ${evt.name}, ${index}, ${evt.value}")
+    //Are we in an allowed time period?
+    if (!(timeAllowed("motion",index))) {
+        LOGDEBUG("Remain silent in current time period")
+        return
+    }
     //Are we in a talking mode?
     if (!(modeAllowed("motion",index))) { 
-        LOGDEBUG "Remain silent while in mode ${location.mode}"
+        LOGDEBUG("Remain silent while in mode ${location.mode}")
         return
     }
     state.TalkPhrase = null
@@ -1631,9 +2065,14 @@ def onSwitch3Event(evt){
 
 def processSwitchEvent(index, evt){
     LOGDEBUG("(onSwitchEvent): ${evt.name}, ${index}, ${evt.value}")
+    //Are we in an allowed time period?
+    if (!(timeAllowed("switch",index))) {
+        LOGDEBUG("Remain silent in current time period")
+        return
+    }
     //Are we in a talking mode?
     if (!(modeAllowed("switch",index))) { 
-        LOGDEBUG "Remain silent while in mode ${location.mode}"
+        LOGDEBUG("Remain silent while in mode ${location.mode}")
         return
     }
     state.TalkPhrase = null
@@ -1668,9 +2107,14 @@ def onPresence3Event(evt){
 
 def processPresenceEvent(index, evt){
     LOGDEBUG("(onPresenceEvent): ${evt.name}, ${index}, ${evt.value}")
+    //Are we in an allowed time period?
+    if (!(timeAllowed("presence",index))) {
+        LOGDEBUG("Remain silent in current time period")
+        return
+    }
     //Are we in a talking mode?
     if (!(modeAllowed("presence",index))) { 
-        LOGDEBUG "Remain silent while in mode ${location.mode}"
+        LOGDEBUG("Remain silent while in mode ${location.mode}")
         return
     }
     state.TalkPhrase = null
@@ -1706,9 +2150,14 @@ def onLockEvent(evt){
 
 def processLockEvent(index, evt){
     LOGDEBUG("(onLockEvent): ${evt.name}, ${index}, ${evt.value}")
+    //Are we in an allowed time period?
+    if (!(timeAllowed("lock",index))) {
+        LOGDEBUG("Remain silent in current time period")
+        return
+    }
     //Are we in a talking mode?
     if (!(modeAllowed("lock",index))) { 
-        LOGDEBUG "Remain silent while in mode ${location.mode}"
+        LOGDEBUG("Remain silent while in mode ${location.mode}")
         return
     }
     state.TalkPhrase = null
@@ -1743,9 +2192,14 @@ def onContactEvent(evt){
 
 def processContactEvent(index, evt){
     LOGDEBUG("(onContactEvent): ${evt.name}, ${index}, ${evt.value}")
+    //Are we in an allowed time period?
+    if (!(timeAllowed("contact",index))) {
+        LOGDEBUG("Remain silent in current time period")
+        return
+    }
     //Are we in a talking mode?
     if (!(modeAllowed("contact",index))) { 
-        LOGDEBUG "Remain silent while in mode ${location.mode}"
+        LOGDEBUG("Remain silent while in mode ${location.mode}")
         return
     }
     state.TalkPhrase = null
@@ -1773,6 +2227,11 @@ def onModeChangeEvent(evt){
 }
 def processModeChangeEvent(index, evt){
     LOGDEBUG("(onModeEvent): Last Mode: ${state.lastMode}, New Mode: ${location.mode}")
+    //Are we in an allowed time period?
+    if (!(timeAllowed("mode",index))) {
+        LOGDEBUG("Remain silent in current time period")
+        return
+    }
     if (settings.modePhraseGroup1.contains(location.mode)){
         if (!(settings.modeExcludePhraseGroup1.contains(state.lastMode))) {
             state.TalkPhrase = null
@@ -1802,9 +2261,14 @@ def onThermostatEvent(evt){
 
 def processThermostatEvent(index, evt){
     LOGDEBUG("(onThermostatEvent): ${evt.name}, ${index}, ${evt.value}")
+    //Are we in an allowed time period?
+    if (!(timeAllowed("thermostat",index))) {
+        LOGDEBUG("Remain silent in current time period")
+        return
+    }
     //Are we in a talking mode?
     if (!(modeAllowed("thermostat",index))) { 
-        LOGDEBUG "Remain silent while in mode ${location.mode}"
+        LOGDEBUG("Remain silent while in mode ${location.mode}")
         return
     }
     state.TalkPhrase = null
@@ -1852,9 +2316,14 @@ def onAcceleration3Event(evt){
 
 def processAccelerationEvent(index, evt){
     LOGDEBUG("(onAccelerationEvent): ${evt.name}, ${index}, ${evt.value}")
+    //Are we in an allowed time period?
+    if (!(timeAllowed("acceleration",index))) {
+        LOGDEBUG("Remain silent in current time period")
+        return
+    }
     //Are we in a talking mode?
     if (!(modeAllowed("acceleration",index))) { 
-        LOGDEBUG "Remain silent while in mode ${location.mode}"
+        LOGDEBUG("Remain silent while in mode ${location.mode}")
         return
     }
     state.TalkPhrase = null
@@ -1889,9 +2358,14 @@ def onWater3Event(evt){
 
 def processWaterEvent(index, evt){
     LOGDEBUG("(onWaterEvent): ${evt.name}, ${index}, ${evt.value}")
+    //Are we in an allowed time period?
+    if (!(timeAllowed("water",index))) {
+        LOGDEBUG("Remain silent in current time period")
+        return
+    }
     //Are we in a talking mode?
     if (!(modeAllowed("water",index))) { 
-        LOGDEBUG "Remain silent while in mode ${location.mode}"
+        LOGDEBUG("Remain silent while in mode ${location.mode}")
         return
     }
     state.TalkPhrase = null
@@ -1926,9 +2400,14 @@ def onSmoke3Event(evt){
 
 def processSmokeEvent(index, evt){
     LOGDEBUG("(onSmokeEvent): ${evt.name}, ${index}, ${evt.value}")
+    //Are we in an allowed time period?
+    if (!(timeAllowed("smoke",index))) {
+        LOGDEBUG("Remain silent in current time period")
+        return
+    }
     //Are we in a talking mode?
     if (!(modeAllowed("smoke",index))) { 
-        LOGDEBUG "Remain silent while in mode ${location.mode}"
+        LOGDEBUG("Remain silent while in mode ${location.mode}")
         return
     }
     state.TalkPhrase = null
@@ -1969,9 +2448,14 @@ def onButton3Event(evt){
 
 def processButtonEvent(index, evt){
     LOGDEBUG("(onButtonEvent): ${evt.name}, ${index}, ${evt.value}")
+    //Are we in an allowed time period?
+    if (!(timeAllowed("button",index))) {
+        LOGDEBUG("Remain silent in current time period")
+        return
+    }
     //Are we in a talking mode?
     if (!(modeAllowed("button",index))) { 
-        LOGDEBUG "Remain silent while in mode ${location.mode}"
+        LOGDEBUG("Remain silent while in mode ${location.mode}")
         return
     }
     state.TalkPhrase = null
@@ -2008,54 +2492,196 @@ def Talk(phrase, customSpeechDevice, evt){
         //Iterate Speech Devices and talk
         LOGTRACE("TALK(${evt.name}) >> ${phrase}")
         currentSpeechDevices.each(){
-            def currentStatus = it.currentValue("status")
-            def currentTrack = it.currentState("trackData")?.jsonValue
-            def currentVolume = it.currentState("level")?.integerValue ? it.currentState("level")?.integerValue : 0
-            if (settings.speechVolume) { LOGDEBUG("${it.displayName} | Volume: ${currentVolume}, Desired Volume: ${settings.speechVolume}") }
-            if (!(settings.speechVolume)) { LOGDEBUG("${it.displayName} | Volume: ${currentVolume}") }
-            if (!(currentTrack == null)){
-                //currentTrack has data
-                LOGTRACE("${it.displayName} | (1)Current Status: ${currentStatus}, CurrentTrack: ${currentTrack}, CurrentTrack.Status: ${currentTrack.status}.")
-                if (currentTrack.status == 'playing') {
-                    LOGTRACE("${it.displayName} | Resuming play. Sending playTextAndResume().")
-                    if (settings.speechVolume) { 
-                        it.playTextAndResume(phrase, settings.speechVolume) 
-                    } else { 
-                        it.playTextAndResume(phrase, currentVolume) 
+            if (state.speechDeviceType == "capability.musicPlayer"){
+                def currentStatus = it.currentValue("status")
+                def currentTrack = it.currentState("trackData")?.jsonValue
+                def currentVolume = it.currentState("level")?.integerValue ? it.currentState("level")?.integerValue : 0
+                if (settings.speechVolume) { LOGDEBUG("${it.displayName} | Volume: ${currentVolume}, Desired Volume: ${settings.speechVolume}") }
+                if (!(settings.speechVolume)) { LOGDEBUG("${it.displayName} | Volume: ${currentVolume}") }
+                if (!(currentTrack == null)){
+                    //currentTrack has data
+                    LOGTRACE("mP | ${it.displayName} | (1)Current Status: ${currentStatus}, CurrentTrack: ${currentTrack}, CurrentTrack.Status: ${currentTrack.status}.")
+                    if (currentTrack.status == 'playing') {
+                        LOGTRACE("${it.displayName} | Resuming play. Sending playTextAndResume().")
+                        if (settings.speechVolume) { 
+                            it.playTextAndResume(phrase, settings.speechVolume) 
+                        } else { 
+                            it.playTextAndResume(phrase, currentVolume) 
+                        }
+                    } else
+                    {
+                        LOGDEBUG("mP | ${it.displayName} | (2)Nothing playing. Sending playTextAndResume()")
+                        if (settings.speechVolume) { 
+                            it.playTextAndResume(phrase, settings.speechVolume) 
+                        } else { 
+                            it.playTextAndResume(phrase, currentVolume) 
+                        }
                     }
-                } else
-                {
-                    LOGDEBUG("${it.displayName} | (2)Nothing playing. Sending playTextAndResume()")
-                    if (settings.speechVolume) { 
-                        it.playTextAndResume(phrase, settings.speechVolume) 
-                    } else { 
-                        it.playTextAndResume(phrase, currentVolume) 
+                } else {
+                    //currentTrack doesn't have data or is not supported on this device
+                    if (currentStatus == "disconnected") {
+                        //VLCThing?
+                        LOGTRACE("mP | ${it.displayName} | (3)VLCThing? | Current Status: ${currentStatus}.")
+                        if (settings.speechVolume) { 
+                            it.setLevel(settings.speechVolume)
+                            it.playText(phrase)
+                            it.setLevel(currentVolume)
+                        } else { 
+                            it.playText(phrase) 
+                        }
+                    } else {
+                        LOGTRACE("mP | ${it.displayName} | (4)Current Status: ${currentStatus}.")
+                        if (settings.speechVolume) { 
+                            it.setLevel(settings.speechVolume)
+                            it.playText(phrase)
+                            it.setLevel(currentVolume)
+                        } else { 
+                            it.playText(phrase) 
+                        }
                     }
                 }
             } else {
-                //currentTrack doesn't have data or is not supported on this device
-                if (currentStatus == "disconnected") {
-                    //VLCThing?
-                    LOGTRACE("${it.displayName} | (3)VLCThing? | Current Status: ${currentStatus}.")
-                    if (settings.speechVolume) { 
-                        it.setLevel(settings.speechVolume)
-                        it.playText(phrase)
-                        it.setLevel(currentVolume)
-                    } else { 
-                        it.playText(phrase) 
-                    }
-                } else {
-                    LOGTRACE("${it.displayName} | (4)Current Status: ${currentStatus}.")
-                    if (settings.speechVolume) { 
-                        it.setLevel(settings.speechVolume)
-                        it.playText(phrase)
-                        it.setLevel(currentVolume)
-                    } else { 
-                        it.playText(phrase) 
-                    }
-                }
+                //capability.speechSynthesis is in use
+                //LOGDEBUG("Supported Commands: ${it.supportedCommands}")
+                //def currentVolume = it.currentState("level")?.integerValue ? it.currentState("level")?.integerValue : 0
+                //def supportsVolume = false
+                //it.supportedCommands?.each(){
+                //    if (it == "setLevel") { 
+                //        supportsVolume = true 
+                //        LOGDEBUG("Volume is supported")
+                //    }
+                //}
+                //LOGDEBUG("Supports Volume = ${supportsVolume}")
+                //if (supportsVolume && (settings.speechVolume > 0)){
+                //    LOGDEBUG("${it.displayName} |sS| Volume: ${currentVolume}, Desired Volume: ${settings.speechVolume}")
+                //    it.setLevel(settings.speechVolume)
+                //    it.speak(phrase)
+                //    it.setLevel(currentVolume)
+                //} else {
+                    LOGDEBUG("sS | ${it.displayName}")
+                    it.speak(phrase)
+                //}
             }
-        }
+        } 
+    }
+}
+
+def timeAllowed(devicetype,index){
+    def now = new Date()
+    //Check Default Setting
+    //devicetype = mode, motion, switch, presence, lock, contact, thermostat, acceleration, water, smoke, button
+    switch (devicetype) {
+        case "mode":
+            if (index == 1 && (!(settings.modeStartTime1 == null))) {
+                if (timeOfDayIsBetween(settings.modeStartTime1, settings.modeEndTime1, now, location.timeZone)) { return true } else { return false }
+            }
+        case "motion":
+            if (index == 1 && (!(settings.motionStartTime1 == null))) {
+                if (timeOfDayIsBetween(settings.motionStartTime1, settings.motionEndTime2, now, location.timeZone)) { return true } else { return false }
+            }
+            if (index == 2 && (!(settings.motionStartTime2 == null))) {
+                if (timeOfDayIsBetween(settings.motionStartTime2, settings.motionEndTime2, now, location.timeZone)) { return true } else { return false }
+            }
+            if (index == 3 && (!(settings.motionStartTime3 == null))) {
+                if (timeOfDayIsBetween(settings.motionStartTime3, settings.motionEndTime3, now, location.timeZone)) { return true } else { return false }
+            }
+        case "switch":
+            if (index == 1 && (!(settings.switchStartTime1 == null))) {
+                    if (timeOfDayIsBetween(settings.switchStartTime1, settings.switchEndTime1, now, location.timeZone)) { return true } else { return false }
+            }
+            if (index == 2 && (!(settings.switchStartTime2 == null))) {
+                if (timeOfDayIsBetween(settings.switchStartTime2, settings.switchEndTime2, now, location.timeZone)) { return true } else { return false }
+            }
+            if (index == 3 && (!(settings.switchStartTime3 == null))) {
+                if (timeOfDayIsBetween(settings.switchStartTime3, settings.switchEndTime3, now, location.timeZone)) { return true } else { return false }
+            }
+        case "presence":
+            if (index == 1 && (!(settings.presenceStartTime1 == null))) {
+                if (timeOfDayIsBetween(settings.presenceStartTime1, settings.presenceEndTime1, now, location.timeZone)) { return true } else { return false }
+            }
+            if (index == 2 && (!(settings.presenceStartTime2 == null))) {
+                if (timeOfDayIsBetween(settings.presenceStartTime2, settings.presenceEndTime2, now, location.timeZone)) { return true } else { return false }
+            }
+            if (index == 3 && (!(settings.presenceStartTime3 == null))) {
+                if (timeOfDayIsBetween(settings.presenceStartTime3, settings.presenceEndTime3, now, location.timeZone)) { return true } else { return false }
+            }
+        case "lock":
+            if (index == 1 && (!(settings.lockStartTime1 == null))) {
+                if (timeOfDayIsBetween(settings.lockStartTime1, settings.lockEndTime1, now, location.timeZone)) { return true } else { return false }
+            }
+            if (index == 2 && (!(settings.lockStartTime2 == null))) {
+                if (timeOfDayIsBetween(settings.lockStartTime2, settings.lockEndTime2, now, location.timeZone)) { return true } else { return false }
+            }
+            if (index == 3 && (!(settings.lockStartTime3 == null))) {
+                if (timeOfDayIsBetween(settings.lockStartTime3, settings.lockEndTime3, now, location.timeZone)) { return true } else { return false }
+            }
+        case "contact":
+            if (index == 1 && (!(settings.contactStartTime1 == null))) {
+                if (timeOfDayIsBetween(settings.contactStartTime1, settings.contactEndTime1, now, location.timeZone)) { return true } else { return false }
+            }
+            if (index == 2 && (!(settings.contactStartTime2 == null))) {
+                if (timeOfDayIsBetween(settings.contactStartTime2, settings.contactEndTime2, now, location.timeZone)) { return true } else { return false }
+            }
+            if (index == 3 && (!(settings.contactStartTime3 == null))) {
+                if (timeOfDayIsBetween(settings.contactStartTime3, settings.contactEndTime3, now, location.timeZone)) { return true } else { return false }
+            }
+        case "thermostat":
+            if (index == 1 && (!(settings.thermostatStartTime1 == null))) {
+                if (timeOfDayIsBetween(settings.thermostatStartTime1, settings.thermostatEndTime1, now, location.timeZone)) { return true } else { return false }
+            }
+            if (index == 2 && (!(settings.thermostatStartTime2 == null))) {
+                if (timeOfDayIsBetween(settings.thermostatStartTime2, settings.thermostatEndTime2, now, location.timeZone)) { return true } else { return false }
+            }
+            if (index == 3 && (!(settings.thermostatStartTime3 == null))) {
+                if (timeOfDayIsBetween(settings.thermostatStartTime3, settings.thermostatEndTime3, now, location.timeZone)) { return true } else { return false }
+            }
+        case "acceleration":
+            if (index == 1 && (!(settings.accelerationStartTime1 == null))) {
+                if (timeOfDayIsBetween(settings.accelerationStartTime1, settings.accelerationEndTime1, now, location.timeZone)) { return true } else { return false }
+            }
+            if (index == 2 && (!(settings.accelerationStartTime2 == null))) {
+                if (timeOfDayIsBetween(settings.accelerationStartTime2, settings.accelerationEndTime2, now, location.timeZone)) { return true } else { return false }
+            }
+            if (index == 3 && (!(settings.accelerationStartTime3 == null))) {
+                if (timeOfDayIsBetween(settings.accelerationStartTime3, settings.accelerationEndTime3, now, location.timeZone)) { return true } else { return false }
+            }
+        case "water":
+            if (index == 1 && (!(settings.waterStartTime1 == null))) {
+                if (timeOfDayIsBetween(settings.waterStartTime1, settings.waterEndTime1, now, location.timeZone)) { return true } else { return false }
+            }
+            if (index == 2 && (!(settings.waterStartTime2 == null))) {
+                    if (timeOfDayIsBetween(settings.waterStartTime2, settings.waterEndTime2, now, location.timeZone)) { return true } else { return false }
+                }
+            if (index == 3 && (!(settings.waterStartTime3 == null))) {
+                if (timeOfDayIsBetween(settings.waterStartTime3, settings.waterEndTime3, now, location.timeZone)) { return true } else { return false }
+            }
+        case "smoke":
+            if (index == 1 && (!(settings.smokeStartTime1 == null))) {
+                if (timeOfDayIsBetween(settings.smokeStartTime1, settings.smokeEndTime1, now, location.timeZone)) { return true } else { return false }
+            }
+            if (index == 2 && (!(settings.smokeStartTime2 == null))) {
+                if (timeOfDayIsBetween(settings.smokeStartTime2, settings.smokeEndTime2, now, location.timeZone)) { return true } else { return false }
+            }
+            if (index == 3 && (!(settings.smokeStartTime3 == null))) {
+                if (timeOfDayIsBetween(settings.smokeStartTime3, settings.smokeEndTime3, now, location.timeZone)) { return true } else { return false }
+            }
+        case "button":
+            if (index == 1 && (!(settings.buttonStartTime1 == null))) {
+                if (timeOfDayIsBetween(settings.buttonStartTime1, settings.buttonEndTime1, now, location.timeZone)) { return true } else { return false }
+            }
+            if (index == 2 && (!(settings.buttonStartTime2 == null))) {
+                if (timeOfDayIsBetween(settings.buttonStartTime2, settings.buttonEndTime2, now, location.timeZone)) { return true } else { return false }
+            }
+            if (index == 3 && (!(settings.buttonStartTime3 == null))) {
+                if (timeOfDayIsBetween(settings.buttonStartTime3, settings.buttonEndTime3, now, location.timeZone)) { return true } else { return false }
+            }
+    }
+    
+    //No overrides have returned True, process Default
+    if (settings.defaultStartTime == null) { 
+    	return true 
+    } else {
+        if (timeOfDayIsBetween(settings.defaultStartTime, settings.defaultEndTime, now, location.timeZone)) { return true } else { return false }
     }
 }
 
@@ -2507,6 +3133,26 @@ def modeAllowed(devicetype,index) {
     } //End: switch (devicetype)
 }
 
+def getTimeFromDateString(inputtime, includeAmPm){
+    //I couldn't find the way to do this in ST / Groovy, so I made my own function
+    //LOGDEBUG "InputTime: ${inputtime}"
+    def outputtime = inputtime
+    def am_pm = "??"
+    outputtime = inputtime.substring(11,16)
+    if (includeAmPm) {
+        if ((outputtime.substring(0,2)).toInteger() < 12) { 
+            am_pm = "am" 
+        } else { 
+            am_pm = "pm"
+            def newHH = ((outputtime.substring(0,2)).toInteger() - 12)
+            outputtime = newHH + outputtime.substring(2,5)
+        }
+        outputtime += am_pm
+    }
+    //LOGDEBUG "OutputTime: ${outputtime}"
+    return outputtime
+}
+
 def TalkQueue(phrase, customSpeechDevice, evt){
     //IN DEVELOPMENT
     // Already talking or just recently (within x seconds) started talking
@@ -2521,7 +3167,7 @@ def LOGTRACE(txt){
     log.trace("${app.label.replace(" ","").toUpperCase()}(${state.appversion}) || ${txt}")
 }
 def setAppVersion(){
-    state.appversion = "1.0.3-Alpha8"
+    state.appversion = "1.0.3-Beta1"
 }
 
  /*
@@ -2549,7 +3195,12 @@ CHANGE LOG for 1.0.3-Alpha5
 CHANGE LOG for 1.0.3-Alpha6
    1/4/2015 - BugFix: Mode change exclusion contained a logic processing bug, corrected.
 CHANGE LOG for 1.0.3-Alpha7
-   1/6/2015 - BugFix: Ensure uninstall option is always available on the Configure page.
-CHANGE LOG for 1.0.3-Alpha8
+   1/6/2015 - BugFix: If a user starts to configure the app and backs out before completing configuration, multiple instances may be created without an Uninstall button. This release ensures the Uninstall version is always available.
+CHANGE LOG for 1.0.3-Beta1
+   1/4/2015 - Feature: Toggle support for either capability.musicPlayer(Sonos/VLCThing) or capability.speechSynthesis(Sonos/VLCThing).  Note: Only one type or the other is currently configurable in the app at a time.  Install the app twice to support both modes.
+   1/4/2015 - Configuration flow change (to better support the choice of musicPlayer / speechSynthesis)
    1/6/2015 - BugFix: Mode change announcement may announce previous mode incorrectly.  Resolved.
+   2/6/2015 - Feature: Optional: Default Allowed Talk Time, with per event group override. (Thanks ST Community: Greg for the idea)
+   2/6/2015 - Feature: Added Talk Now feature (once the app is properly setup/configured, it will show up on the main page under Status and Configure).
+   2/6/2015 - Feature Modification: Default text is shown in Group 1 of each device type as an example; if the user deletes the text and saves, it reappears the next time they edit the event type. This modification only fills the default text if the speech text is blank AND the device list is empty.  (Thanks for the feedback ST Community: Greg)
  */
