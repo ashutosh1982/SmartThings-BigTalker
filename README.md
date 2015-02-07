@@ -102,7 +102,7 @@ Have Fun!
   * BugFix: Mode change announcement may announce previous mode incorrectly.  Resolved.
 * 2/7/2015 - 1.0.3-Beta1
   * Moving from Alpha (development) to Beta (testing)
-  * 1/4/2015 - Feature: Toggle support for either capability.musicPlayer(Sonos/VLCThing) or capability.speechSynthesis(Sonos/VLCThing).  Note: Only one type or the other is currently configurable in the app at a time.
+  * 1/4/2015 - Feature: Toggle support for either capability.musicPlayer(Sonos/VLCThing) or capability.speechSynthesis(Ubi/VLCThing).  Note: Only one type or the other is currently configurable in the app at a time.
     * Install the app twice to support both modes.
   * 1/4/2015 - Configuration flow change (to better support the choice of musicPlayer / speechSynthesis)
   * 1/6/2015 - BugFix: Mode change announcement may announce previous mode incorrectly.  Resolved.
