@@ -1,5 +1,5 @@
 /**
- *  BIG TALKER -- Version 1.0.3-Beta1 -- A SmartApp for SmartThings Home Automation System
+ *  BIG TALKER -- Version 1.0.3-Beta2 -- A SmartApp for SmartThings Home Automation System
  *  Copyright 2014 - rayzur@rayzurbock.com - Brian S. Lowrance
  *  For the latest version, development and test releases visit http://www.github.com/rayzurbock
  *
@@ -52,6 +52,7 @@ preferences {
     page(name: "pageConfigWater")
     page(name: "pageConfigSmoke")
     page(name: "pageConfigButton")
+    page(name: "pageConfigTime")
 //End preferences
 }
 
@@ -1465,7 +1466,7 @@ def pageConfigure(){
             paragraph "Set to ON for 'Music Player' support, OFF for 'Speech Synthesis' support"
             input "speechDeviceType", "bool", title: "ON=Sonos/VLCThing, OFF=Ubi/VLCThing", required: true, defaultValue: true, refreshAfterSelection: true
             paragraph "\nClick Next (top right) to continue configuration...\n"
-            if (speechDeviceType == true) {state.speechDeviceType = "capability.musicPlayer"}
+            if (speechDeviceType == true || speechDeviceType == null) {state.speechDeviceType = "capability.musicPlayer"}
             if (speechDeviceType == false) {state.speechDeviceType = "capability.speechSynthesis"}
         }
     }
@@ -1475,6 +1476,7 @@ def pageConfigure(){
 def pageConfigureDefaults(){
     dynamicPage(name: "pageConfigureDefaults", title: "Configure Defaults", nextPage: "pageConfigureEvents", install: false, uninstall: false) {
         section("Talk with:"){
+           if (state.speechDeviceType == null || state.speechDeviceType == "") { state.speechDeviceType = "capability.musicPlayer" }
            input "speechDeviceDefault", state.speechDeviceType, title: "Talk with these text-to-speech devices (default)", multiple: true, required: true, refreshAfterSelection: false
         }
         section ("Adjust volume during announcement (optional; Supports: Sonos, VLC-Thing):"){
@@ -1496,17 +1498,66 @@ def pageConfigureDefaults(){
 def pageConfigureEvents(){
     dynamicPage(name: "pageConfigureEvents", title: "Configure Events", install: true, uninstall: false) {
         section("Talk on events:") {
-            href "pageConfigMotion", title:"Motion", description:"Tap to configure"
-            href "pageConfigSwitch", title:"Switch", description:"Tap to configure"
-            href "pageConfigPresence", title:"Presence", description:"Tap to configure"
-            href "pageConfigLock", title:"Lock", description:"Tap to configure"
-            href "pageConfigContact", title:"Contact", description:"Tap to configure"
-            href "pageConfigMode", title:"Mode", description:"Tap to configure"
-            href "pageConfigThermostat", title:"Thermostat", description:"Tap to configure"
-            href "pageConfigAcceleration", title: "Acceleration", description:"Tap to configure"
-            href "pageConfigWater", title: "Water", description:"Tap to configure"
-            href "pageConfigSmoke", title: "Smoke", description:"Tap to configure"
-            href "pageConfigButton", title: "Button", description:"Tap to configure"
+            if (settings.timeSlotTime1 || settings.timeSlotTime2 || settings.timeSlotTime3) {
+                href "pageConfigTime", title: "Time", description: "Tap to modify"
+            } else {
+                href "pageConfigTime", title: "Time", description: "Tap to configure"
+            }
+            if (settings.motionDeviceGroup1 || settings.motionDeviceGroup2 || settings.motionDeviceGroup3) {
+                href "pageConfigMotion", title:"Motion", description:"Tap to modify"
+            } else {
+                href "pageConfigMotion", title:"Motion", description:"Tap to configure"
+            }
+            if (settings.switchDeviceGroup1 || settings.switchDeviceGroup2 || settings.switchDeviceGroup3) {
+                href "pageConfigSwitch", title:"Switch", description:"Tap to modify"
+            } else {
+                href "pageConfigSwitch", title:"Switch", description:"Tap to configure"
+            }
+            if (settings.presDeviceGroup1 || settings.presDeviceGroup2 || settings.presDeviceGroup3) {
+                href "pageConfigPresence", title:"Presence", description:"Tap to modify"
+            } else {
+                href "pageConfigPresence", title:"Presence", description:"Tap to configure"
+            }
+            if (settings.lockDeviceGroup1 || settings.lockDeviceGroup2 || settings.lockDeviceGroup3) {
+                href "pageConfigLock", title:"Lock", description:"Tap to modify"
+            } else {
+                href "pageConfigLock", title:"Lock", description:"Tap to configure"
+            }
+            if (settings.contactDeviceGroup1 || settings.contactDeviceGroup2 || settings.contactDeviceGroup3) {
+                href "pageConfigContact", title:"Contact", description:"Tap to modify"
+            } else {
+                href "pageConfigContact", title:"Contact", description:"Tap to configure"
+            }
+            if (settings.modePhraseGroup1 || settings.modePhraseGroup2 || settings.modePhraseGroup3) {
+                href "pageConfigMode", title:"Mode", description:"Tap to modify"
+            } else {
+                href "pageConfigMode", title:"Mode", description:"Tap to configure"
+            }
+            if (settings.thermostatDeviceGroup1 || settings.thermostatDeviceGroup2 || settings.thermostatDeviceGroup3) {
+                href "pageConfigThermostat", title:"Thermostat", description:"Tap to modify"
+            } else {
+                href "pageConfigThermostat", title:"Thermostat", description:"Tap to configure"
+            }
+            if (settings.accelerationDeviceGroup1 || settings.accelerationDeviceGroup2 || settings.accelerationDeviceGroup3) {
+                href "pageConfigAcceleration", title: "Acceleration", description:"Tap to modify"
+            } else {
+                href "pageConfigAcceleration", title: "Acceleration", description:"Tap to configure"
+            }
+            if (settings.waterDeviceGroup1 || settings.waterDeviceGroup2 || settings.waterDeviceGroup3) {
+                href "pageConfigWater", title: "Water", description:"Tap to modify"
+            } else {
+                href "pageConfigWater", title: "Water", description:"Tap to configure"
+            }
+            if (settings.smokeDeviceGroup1 || settings.smokeDeviceGroup2 || settings.smokeDeviceGroup3) {
+                href "pageConfigSmoke", title: "Smoke", description:"Tap to modify"
+            } else { 
+                href "pageConfigSmoke", title: "Smoke", description:"Tap to configure"
+            }
+            if (settings.buttonDeviceGroup1 || settings.buttonDeviceGroup2 || settings.buttonDeviceGroup3) {
+                href "pageConfigButton", title: "Button", description:"Tap to configure"
+            } else {
+                href "pageConfigButton", title: "Button", description:"Tap to configure"
+            }
         }
     }
 }
@@ -1912,6 +1963,32 @@ def pageConfigButton(){
 //End pageConfigSmoke()
 }
 
+def pageConfigTime(){
+    dynamicPage(name: "pageConfigTime", title: "Configure talk at specific time(s)", install: false, uninstall: false) {
+        section("Time Slot 1"){
+            input name: "timeSlotDays1", type: "enum", title: "Which day(s)", required: false, options: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], multiple: true
+            input name: "timeSlotTime1", type: "time", title: "Time of day", required: false
+            input name: "timeSlotOnTime1", type: "text", title: "Say on schedule:", required: false
+            input name: "timeSlotSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "timeSlotModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+        }
+        section("Time Slot 2"){
+            input name: "timeSlotDays2", type: "enum", title: "Which day(s)", required: false, options: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], multiple: true
+            input name: "timeSlotTime2", type: "time", title: "Time of day", required: false
+            input name: "timeSlotOnTime2", type: "text", title: "Say on schedule:", required: false
+            input name: "timeSlotSpeechDevice2", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "timeSlotModes2", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+        }
+        section("Time Slot 3"){
+            input name: "timeSlotDays3", type: "enum", title: "Which day(s)", required: false, options: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], multiple: true
+            input name: "timeSlotTime3", type: "time", title: "Time of day", required: false
+            input name: "timeSlotOnTime3", type: "text", title: "Say on schedule:", required: false
+            input name: "timeSlotSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
+            input name: "timeSlotModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
+        }
+    }
+}
+
 def installed() {
 	state.installed = true
     LOGTRACE("Installed with settings: ${settings}")
@@ -1997,6 +2074,10 @@ if (!(checkConfig())) {
     if (buttonDeviceGroup1) { subscribe(buttonDeviceGroup1, "button", onButton1Event) }
     if (buttonDeviceGroup2) { subscribe(buttonDeviceGroup2, "button", onButton2Event) }
     if (buttonDeviceGroup3) { subscribe(buttonDeviceGroup3, "button", onButton3Event) }
+    //Subscribe Schedule
+    if (timeSlotTime1) { unschedule(onSchedule1Event); schedule(timeSlotTime1, onSchedule1Event) }
+    if (timeSlotTime2) { unschedule(onSchedule2Event); schedule(timeSlotTime2, onSchedule2Event) }
+    if (timeSlotTime3) { unschedule(onSchedule3Event); schedule(timeSlotTime3, onSchedule3Event) }
     //Subscribe Mode
     if (modePhraseGroup1) { subscribe(location, onModeChangeEvent) }
     state.lastMode = location.mode
@@ -2005,6 +2086,54 @@ if (!(checkConfig())) {
 	LOGTRACE("Initialized")
     
 //End initialize()
+}
+
+
+//BEGIN HANDLE TIME SCHEDULE
+def onSchedule1Event(){
+    processScheduledEvent(1, timeSlotTime1, timeSlotDays1)
+}
+def onSchedule2Event(){
+    processScheduledEvent(2, timeSlotTime2, timeSlotDays2)
+}
+def onSchedule3Event(){
+    processScheduledEvent(3, timeSlotTime3, timeSlotDays3)
+}
+
+def processScheduledEvent(index, eventtime, alloweddays){
+    def calendar = Calendar.getInstance()
+	calendar.setTimeZone(location.timeZone)
+	def today = calendar.get(Calendar.DAY_OF_WEEK)
+    def todayStr = ""
+    switch (today) {
+		case Calendar.MONDAY: todayStr = "MONDAY"
+		case Calendar.TUESDAY:  todayStr = "TUESDAY"
+		case Calendar.WEDNESDAY:  todayStr = "WEDNESDAY"
+		case Calendar.THURSDAY:  todayStr = "THURSDAY"
+        case Calendar.FRIDAY:  todayStr = "FRIDAY"
+        case Calendar.SATURDAY:  todayStr = "SATURDAY"
+        case Calendar.SUNDAY:  todayStr = "SUNDAY"
+    }
+    def timeNow = getTimeFromDateString(eventtime, true)
+    LOGDEBUG("(onScheduledEvent): ${timeNow}, ${index}, ${todayStr}, ${alloweddays}")
+    alloweddays.each(){
+        if (todayStr.toUpperCase() == it.toUpperCase()) {
+            LOGDEBUG("Time and day match schedule")
+            if (!(modeAllowed("motion",index))) { 
+               LOGDEBUG("Remain silent while in mode ${location.mode}")
+               return
+            }
+            if (index == 1) { state.TalkPhrase = settings.timeSlotOnTime1; state.speechDevice = timeSlotSpeechDevice1 }
+            if (index == 2) { state.TalkPhrase = settings.timeSlotOnTime2; state.speechDevice = timeSlotSpeechDevice2 }
+            if (index == 3) { state.TalkPhrase = settings.timeSlotOnTime3; state.speechDevice = timeSlotSpeechDevice3 }
+            def customevent = [displayName: 'BigTalker:OnSchedule', name: 'OnSchedule', value: "${todayStr}@${timeNow}"]
+            Talk(state.TalkPhrase, state.speechDevice, customevent)
+        } else {
+            LOGDEBUG("Time matches, but day does not match schedule; remaining silent")
+        }
+    }
+    state.TalkPhrase = null
+    state.speechDevice = null
 }
 
 //BEGIN HANDLE MOTIONS
@@ -3167,7 +3296,7 @@ def LOGTRACE(txt){
     log.trace("${app.label.replace(" ","").toUpperCase()}(${state.appversion}) || ${txt}")
 }
 def setAppVersion(){
-    state.appversion = "1.0.3-Beta1"
+    state.appversion = "1.0.3-Beta2"
 }
 
  /*
@@ -3203,4 +3332,7 @@ CHANGE LOG for 1.0.3-Beta1
    2/6/2015 - Feature: Optional: Default Allowed Talk Time, with per event group override. (Thanks ST Community: Greg for the idea)
    2/6/2015 - Feature: Added Talk Now feature (once the app is properly setup/configured, it will show up on the main page under Status and Configure).
    2/6/2015 - Feature Modification: Default text is shown in Group 1 of each device type as an example; if the user deletes the text and saves, it reappears the next time they edit the event type. This modification only fills the default text if the speech text is blank AND the device list is empty.  (Thanks for the feedback ST Community: Greg)
+CHANGE LOG for 1.0.3-Beta2
+   2/8/2015 - Feature: Added scheduled event based on time of day and day(s) of the week.  Only allowed 3 as ST apps are only allowed 4 schedules at a time, so I'm reserving 1 for future use (Thanks ST Community: Greg for the feature request)
+   2/8/2015 - BugFix: Hopefully fixed a bug where upgrading from versions before 1.0.3-Beta1 speechDevice selections may show up as a text field; toggling Sonos/Ubi support resolved, so added code to try to prevent the issue to start with (Thanks ST Community: Greg for the report)
  */
