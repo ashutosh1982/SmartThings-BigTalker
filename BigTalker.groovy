@@ -1,5 +1,5 @@
 /**
- *  BIG TALKER -- Version 1.0.3-Beta2 -- A SmartApp for SmartThings Home Automation System
+ *  BIG TALKER -- Version 1.0.3-Beta3 -- A SmartApp for SmartThings Home Automation System
  *  Copyright 2014 - rayzur@rayzurbock.com - Brian S. Lowrance
  *  For the latest version, development and test releases visit http://www.github.com/rayzurbock
  *
@@ -119,6 +119,118 @@ def pageStatus(){
         }
         enabledDevices = ""
         //END STATUS DEFAULTS
+  
+        //BEGIN STATUS TIME SCHEDULED EVENTS GROUP 1
+        if (settings.timeSlotTime1){
+            enabledDevices += "AT: ${getTimeFromDateString(settings.timeSlotTime1, true)} \n"
+            enabledDevices += "ON: \n"
+            enabledDevices += "   "
+            def i = 0
+            timeSlotDays1.each() {
+                enabledDevices += "${it},"
+                i += 1
+                if (i == 3) { enabledDevices += "\n   " }
+            }
+            enabledDevices += "\n"
+            enabledDevices += "SAY: \n"
+            enabledDevices += "   ${timeSlotOnTime1}\n"
+            if (settings.timeSlotSpeechDevice1) {
+                enabledDevices += "Custom Speech Device(s):\n"
+                enabledDevices += "   "
+                settings.timeSlotSpeechDevice1.each() {
+                    enabledDevices += "${it.displayName},"
+                    enabledDevices += "\n\n"
+                }
+            }
+            if (settings.timeSlotModes1) {
+                enabledDevices += "Custom mode(s):\n"
+                enabledDevices += "   "
+                settings.timeSlotModes1.each() {
+                    enabledDevices += "${it},"
+                }
+            }
+            if (!(enabledDevices == "")) {
+                section ("Time Schedule 1:"){
+                    paragraph enabledDevices
+                }
+            }
+            enabledDevices = ""
+        }
+        //END STATUS TIME SCHEDULED EVENTS GROUP 1
+        //BEGIN STATUS TIME SCHEDULED EVENTS GROUP 2
+        if (settings.timeSlotTime2){
+            enabledDevices += "AT: ${getTimeFromDateString(settings.timeSlotTime2, true)} \n"
+            enabledDevices += "ON: \n"
+            enabledDevices += "   "
+            def i = 0
+            timeSlotDays2.each() {
+                enabledDevices += "${it},"
+                i += 1
+                if (i == 3) { enabledDevices += "\n   " }
+            }
+            enabledDevices += "\n"
+            enabledDevices += "SAY: \n"
+            enabledDevices += "   ${timeSlotOnTime2}\n"
+            if (settings.timeSlotSpeechDevice2) {
+                enabledDevices += "Custom Speech Device(s):\n"
+                enabledDevices += "   "
+                settings.timeSlotSpeechDevice2.each() {
+                    enabledDevices += "${it.displayName},"
+                    enabledDevices += "\n\n"
+                }
+            }
+            if (settings.timeSlotModes2) {
+                enabledDevices += "Custom mode(s):\n"
+                enabledDevices += "   "
+                settings.timeSlotModes2.each() {
+                    enabledDevices += "${it},"
+                }
+            }
+            if (!(enabledDevices == "")) {
+                section ("Time Schedule 2:"){
+                    paragraph enabledDevices
+                }
+            }
+            enabledDevices = ""
+        }
+        //END STATUS TIME SCHEDULED EVENTS GROUP 2
+        //BEGIN STATUS TIME SCHEDULED EVENTS GROUP 3
+        if (settings.timeSlotTime3){
+            enabledDevices += "AT: ${getTimeFromDateString(settings.timeSlotTime3, true)} \n"
+            enabledDevices += "ON: \n"
+            enabledDevices += "   "
+            def i = 0
+            timeSlotDays3.each() {
+                enabledDevices += "${it},"
+                i += 1
+                if (i == 3) { enabledDevices += "\n   " }
+            }
+            enabledDevices += "\n"
+            enabledDevices += "SAY: \n"
+            enabledDevices += "   ${timeSlotOnTime3}\n"
+            if (settings.timeSlotSpeechDevice3) {
+                enabledDevices += "Custom Speech Device(s):\n"
+                enabledDevices += "   "
+                settings.timeSlotSpeechDevice3.each() {
+                    enabledDevices += "${it.displayName},"
+                    enabledDevices += "\n\n"
+                }
+            }
+            if (settings.timeSlotModes3) {
+                enabledDevices += "Custom mode(s):\n"
+                enabledDevices += "   "
+                settings.timeSlotModes3.each() {
+                    enabledDevices += "${it},"
+                }
+            }
+            if (!(enabledDevices == "")) {
+                section ("Time Schedule 3:"){
+                    paragraph enabledDevices
+                }
+            }
+            enabledDevices = ""
+        }
+        //END STATUS TIME SCHEDULED EVENTS GROUP 3
   
         //BEGIN STATUS CONFIG MOTION GROUP 1
         if (settings.motionDeviceGroup1) {
@@ -3296,7 +3408,7 @@ def LOGTRACE(txt){
     log.trace("${app.label.replace(" ","").toUpperCase()}(${state.appversion}) || ${txt}")
 }
 def setAppVersion(){
-    state.appversion = "1.0.3-Beta2"
+    state.appversion = "1.0.3-Beta3"
 }
 
  /*
@@ -3334,5 +3446,8 @@ CHANGE LOG for 1.0.3-Beta1
    2/6/2015 - Feature Modification: Default text is shown in Group 1 of each device type as an example; if the user deletes the text and saves, it reappears the next time they edit the event type. This modification only fills the default text if the speech text is blank AND the device list is empty.  (Thanks for the feedback ST Community: Greg)
 CHANGE LOG for 1.0.3-Beta2
    2/8/2015 - Feature: Added scheduled event based on time of day and day(s) of the week.  Only allowed 3 as ST apps are only allowed 4 schedules at a time, so I'm reserving 1 for future use (Thanks ST Community: Greg for the feature request)
+   2/8/2015 - Feature Modification: Modified buttons to configure events to state "Tap to modify" if they are configured already and "Tap to configure" if they have not been configured.
    2/8/2015 - BugFix: Hopefully fixed a bug where upgrading from versions before 1.0.3-Beta1 speechDevice selections may show up as a text field; toggling Sonos/Ubi support resolved, so added code to try to prevent the issue to start with (Thanks ST Community: Greg for the report)
+CHANGE LOG for 1.0.3-Beta3
+   2/8/2015 - Feature Modification: Added time scheduled events to the status page
  */
