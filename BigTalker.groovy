@@ -1,5 +1,5 @@
 /**
- *  BIG TALKER -- Version 1.0.3-Beta3 -- A SmartApp for SmartThings Home Automation System
+ *  BIG TALKER -- Version 1.0.3-Beta4 -- A SmartApp for SmartThings Home Automation System
  *  Copyright 2014 - rayzur@rayzurbock.com - Brian S. Lowrance
  *  For the latest version, development and test releases visit http://www.github.com/rayzurbock
  *
@@ -1688,8 +1688,8 @@ def pageConfigMotion(){
             input name: "motionTalkInactive1", type: "text", title: "Say this on motion inactive:", required: false, defaultValue: defaultSpeechInactive1
             input name: "motionSpeechDevice1", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "motionModes1", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "motionStartTime1", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "motionEndTime1", "time", title: "Don't talk after (overrides default)", required: (!(settings.motionStartTime1 == null))
+            input name: "motionStartTime1", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "motionEndTime1", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.motionStartTime1 == null))
         }
         section("Motion Sensor Group 2"){
             input name: "motionDeviceGroup2", type: "capability.motionSensor", title: "Motion Sensor(s)", required: false, multiple: true
@@ -1697,8 +1697,8 @@ def pageConfigMotion(){
             input name: "motionTalkInactive2", type: "text", title: "Say this on motion inactive:", required: false
             input name: "motionSpeechDevice2", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "motionModes2", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "motionStartTime2", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "motionEndTime2", "time", title: "Don't talk after (overrides default)", required: (!(settings.motionStartTime2 == null))
+            input name: "motionStartTime2", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "motionEndTime2", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.motionStartTime2 == null))
         }
         section("Motion Sensor Group 3"){
             input name: "motionDeviceGroup3", type: "capability.motionSensor", title: "Motion Sensor(s)", required: false, multiple: true
@@ -1706,8 +1706,8 @@ def pageConfigMotion(){
             input name: "motionTalkInactive3", type: "text", title: "Say this on motion inactive:", required: false
             input name: "motionSpeechDevice3", type: state.speechDeviceType, title: "Talk with these text-to-speech devices (overrides default)", multiple: true, required: false
             input name: "motionModes3", type: "mode", title: "Talk when in these mode(s) (overrides default)", multiple: true, required: false
-            input name: "motionStartTime3", "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
-            input name: "motionEndTime3", "time", title: "Don't talk after (overrides default)", required: (!(settings.motionStartTime3 == null))
+            input name: "motionStartTime3", type: "time", title: "Don't talk before (overrides default)", required: false, refreshAfterSelection: true
+            input name: "motionEndTime3", type: "time", title: "Don't talk after (overrides default)", required: (!(settings.motionStartTime3 == null))
         }
     }
 //End pageConfigMotion()
@@ -3408,7 +3408,7 @@ def LOGTRACE(txt){
     log.trace("${app.label.replace(" ","").toUpperCase()}(${state.appversion}) || ${txt}")
 }
 def setAppVersion(){
-    state.appversion = "1.0.3-Beta3"
+    state.appversion = "1.0.3-Beta4"
 }
 
  /*
@@ -3450,4 +3450,6 @@ CHANGE LOG for 1.0.3-Beta2
    2/8/2015 - BugFix: Hopefully fixed a bug where upgrading from versions before 1.0.3-Beta1 speechDevice selections may show up as a text field; toggling Sonos/Ubi support resolved, so added code to try to prevent the issue to start with (Thanks ST Community: Greg for the report)
 CHANGE LOG for 1.0.3-Beta3
    2/8/2015 - Feature Modification: Added time scheduled events to the status page
+CHANGE LOG for 1.0.3-Beta4
+  2/14/2015 - BugFix: When attempting to configure a "motion" event user receives the message "Error:You are not authorized to perform the requested operation" (Thanks: ST:chaaad614)
  */
