@@ -1,5 +1,5 @@
 /**
- *  BIG TALKER -- Version 1.0.3-Beta4 -- A SmartApp for SmartThings Home Automation System
+ *  BIG TALKER -- Version 1.0.3-Beta5 -- A SmartApp for SmartThings Home Automation System
  *  Copyright 2014 - rayzur@rayzurbock.com - Brian S. Lowrance
  *  For the latest version, development and test releases visit http://www.github.com/rayzurbock
  *
@@ -38,7 +38,7 @@ preferences {
     page(name: "pageStart")
     page(name: "pageStatus")
     page(name: "pageTalkNow")
-    page(name: "pageConfigure")
+    page(name: "pageConfigureSpeechDeviceType")
     page(name: "pageConfigureDefaults")
     page(name: "pageConfigureEvents")
     page(name: "pageConfigMotion")
@@ -57,11 +57,19 @@ preferences {
 }
 
 def pageStart(){
+    if (checkConfig()) { 
+        // Do nothing here, but run checkConfig() 
+    } 
     dynamicPage(name: "pageStart", title: "Big Talker", install: false, uninstall: state.installed){
         section(){
-            href "pageStatus", title:"Status", description:"Tap to view status"
-            href "pageConfigure", title:"Configure", description:"Tap to configure"
-            if (state.configOK) { href "pageTalkNow", title:"Talk Now", description:"Tap to setup talk now" }
+            if (!(state.configOK)) { 
+                href "pageConfigureSpeechDeviceType", title:"Configure", description:"Tap to configure"
+            } else {
+                href "pageStatus", title:"Status", description:"Tap to view status"
+                href "pageConfigureDefaults", title: "Configure Defaults", description: "Tap to configure defaults"
+                href "pageConfigureEvents", title: "Configure Events", description: "Tap to configure events"
+                href "pageTalkNow", title:"Talk Now", description:"Tap to setup talk now" 
+            }
         }
         section(){
             paragraph "Big Talker is a SmartApp that can make your house talk depending on various triggered events."
@@ -1569,9 +1577,9 @@ def pageTalkNow(){
     }
 }
 
-def pageConfigure(){
-    if (state.installed == null) { state.installed = false; state.speechDeviceType = "capability.musicPlayer"}
-    dynamicPage(name: "pageConfigure", title: "Configure", nextPage: "pageConfigureDefaults", install: false, uninstall: false) {
+def pageConfigureSpeechDeviceType(){
+    if (!(state.installed == true)) { state.installed = false; state.speechDeviceType = "capability.musicPlayer"}
+    dynamicPage(name: "pageConfigureSpeechDeviceType", title: "Configure", nextPage: "pageConfigureDefaults", install: false, uninstall: false) {
         section ("Speech Device Type Support"){
             paragraph "${app.label} can support either 'Music Player' or 'Speech Synthesis' devices."
             paragraph "'Music Player' typically supports devices such as Sonos and VLCThing.\n\n'Speech Synthesis' typically supports devices such as Ubi and VLCThing."
@@ -1582,11 +1590,27 @@ def pageConfigure(){
             if (speechDeviceType == false) {state.speechDeviceType = "capability.speechSynthesis"}
         }
     }
-//End pageConfigure()
+//End pageConfigureSpeechDeviceType()
 }
 
 def pageConfigureDefaults(){
-    dynamicPage(name: "pageConfigureDefaults", title: "Configure Defaults", nextPage: "pageConfigureEvents", install: false, uninstall: false) {
+    def dynPageProperties = [
+            name:      "pageConfigureDefaults",
+            title:     "Configure Defaults",
+            install:   false,
+            uninstall: false
+    ]
+    if (!(state.installed == true)) { 
+        dynPageProperties = [
+            name:      "pageConfigureDefaults",
+            title:     "Configure Defaults",
+            install:   false,
+            uninstall: false,
+            nextPage:  "pageConfigureEvents"
+        ]
+    }
+    return dynamicPage(dynPageProperties) {
+    //dynamicPage(name: "pageConfigureDefaults", title: "Configure Defaults", nextPage: "${myNextPage}", install: false, uninstall: false) {
         section("Talk with:"){
            if (state.speechDeviceType == null || state.speechDeviceType == "") { state.speechDeviceType = "capability.musicPlayer" }
            input "speechDeviceDefault", state.speechDeviceType, title: "Talk with these text-to-speech devices (default)", multiple: true, required: true, refreshAfterSelection: false
@@ -2109,6 +2133,7 @@ def installed() {
 }
 
 def updated() {
+    state.installed = true
 	LOGTRACE("Updated with settings: ${settings}")
 	unsubscribe()
 	initialize()
@@ -2116,19 +2141,22 @@ def updated() {
 }
 
 def checkConfig() {
-    state.configErrorList = ""
+    def configErrorList = ""
     if (!(state.speechDeviceType)){
-       state.speechDeviceType = "capability.musicPlayer" //Set a default if the app was update and didn't contain settings.speechDeviceType.
+       state.speechDeviceType = "capability.musicPlayer" //Set a default if the app was update and didn't contain settings.speechDeviceType
     }
     if (!(settings.speechDeviceDefault)){
-        state.configErrorList += "  ** Default speech device(s) not selected\n"
+        configErrorList += "  ** Default speech device(s) not selected,"
     }
-    if (!(state.configErrorList == "")) { 
-        LOGDEBUG ("checkConfig() returning FALSE")
-        state.ConfigOK = false
+    if (!(state.installed == true)) {
+	    configErrorList += "  ** state.installed not True,"
+	}
+    if (!(configErrorList == "")) { 
+        LOGDEBUG ("checkConfig() returning FALSE (${configErrorList})")
+        state.configOK = false
         return false //Errors occurred.  Config check failed.
     } else {
-        LOGDEBUG ("checkConfig() returning TRUE")
+        LOGDEBUG ("checkConfig() returning TRUE (${configErrorList})")
         state.configOK = true
         return true
     }
@@ -3408,7 +3436,7 @@ def LOGTRACE(txt){
     log.trace("${app.label.replace(" ","").toUpperCase()}(${state.appversion}) || ${txt}")
 }
 def setAppVersion(){
-    state.appversion = "1.0.3-Beta4"
+    state.appversion = "1.0.3-Beta5"
 }
 
  /*
@@ -3452,4 +3480,6 @@ CHANGE LOG for 1.0.3-Beta3
    2/8/2015 - Feature Modification: Added time scheduled events to the status page
 CHANGE LOG for 1.0.3-Beta4
   2/14/2015 - BugFix: When attempting to configure a "motion" event user receives the message "Error:You are not authorized to perform the requested operation" (Thanks: ST:chaaad614)
+CHANGE LOG for 1.0.3-Beta5
+  2/14/2015 - Feature Modification: Modified configuration flow. Only show Sonos/Ubi selection on first run, then proceed to defaults and event selection.  Prior to install completion show button for "Configure". After install, show buttons for "Status", "Configure Defaults", "Configure Events", "Talk Now".
  */
