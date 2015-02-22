@@ -1,7 +1,7 @@
 #Description
 Big Talker is a SmartApp for SmartThings that can make your house talk depending on various triggered events. <br />
 Pair with any SmartThings compatible audio device such as Sonos, VLC Thing on your computer or Raspberry Pi!  See <b>More Details</b> section below for more features.<br />
-Version: 1.0.3-Beta5 <br />
+Version: 1.0.3-Beta6 <br />
 
 #Support the project
  This SmartApp is free. Donations to support development efforts are accepted via:
@@ -59,6 +59,7 @@ Voice phrases support the following variables (to be filled in at runtime)
 * %locationname% = Hub Location name; home, work, etc...
 * %lastmode% = Last home mode; home, away, etc...
 * %mode% = Current home mode; home, away, etc...
+* %time% = Current time; HH:mm am/pm
 
 For example when turning off a switch named "Office Light" with a spoken phrase of "%devicename% %devicetype% has been turned %devicechange%" would speak "Office light switch has been turned off"
 
@@ -117,3 +118,9 @@ Have Fun!
   * BugFix: When attempting to configure a "motion" event user receives the message "Error:You are not authorized to perform the requested operation" (Thanks: ST:chaaad614)
 * 2/14/2015 - 1.0.3-Beta5
   * Feature Modification: Modified configuration flow. Only show Sonos/Ubi selection on first run, then proceed to defaults and event selection.  Prior to install completion show button for "Configure". After install, show buttons for "Status", "Configure Defaults", "Configure Events", "Talk Now".
+* CHANGE LOG for 1.0.3-Beta6
+  * 2/21/2015 - BugFix(attempt; needs testing): Under capability.musicPlayer Talk() calls playTextAndResume() even when it detects that nothing was playing before speaking. Changed to playTextAndRestore() when nothing is previously playing. Thanks ST Community:Kristopher "will play an audio stream after processing an event and sometimes not.  I assume its supposed to resume a stream if its already playing, but I definitely don't want it to start a new stream after its done talking."
+  * 2/21/2015 - BugFix: Fixed an issue where custom talk modes were not checked when using a scheduled Time event.
+  * 2/21/2015 - BugFix: Fixed an issue where current day of the week was not calculated properly for a scheduled Time event causing these events to speak on days of the week that were not desired.
+  * 2/21/2015 - BugFix: Fixed an issue where "Talk Now" would sometimes say the last spoken phrase upon entering the "Talk Now" page.
+  * 2/21/2015 - Feature Modification: Added phrase variable %time% which will return the current time.
