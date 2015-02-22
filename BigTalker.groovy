@@ -1,5 +1,5 @@
 /**
- *  BIG TALKER -- Version 1.0.3-Beta5 -- A SmartApp for SmartThings Home Automation System
+ *  BIG TALKER -- Version 1.0.3-Beta6 -- A SmartApp for SmartThings Home Automation System
  *  Copyright 2014 - rayzur@rayzurbock.com - Brian S. Lowrance
  *  For the latest version, development and test releases visit http://www.github.com/rayzurbock
  *
@@ -2136,6 +2136,7 @@ def updated() {
     state.installed = true
 	LOGTRACE("Updated with settings: ${settings}")
 	unsubscribe()
+    unschedule()
 	initialize()
 //End updated()
 }
@@ -2164,7 +2165,7 @@ def checkConfig() {
 
 def initialize() {
     setAppVersion()
-if (!(checkConfig())) { 
+    if (!(checkConfig())) { 
         def msg = ""
         msg = "ERROR: App not properly configured!  Can't start.\n"
         msg += "ERRORs:\n${state.configErrorList}"
@@ -2172,7 +2173,32 @@ if (!(checkConfig())) {
         sendNotificationEvent(msg)
         return //App not properly configured, exit, don't subscribe
     }
-        
+    
+    //WORKAROUND FOR "TimeoutException" Issue. Occurs when scheduling/subscribing to a lot of events possibly too soon after unschedule()/unsubscribe(); run in a seperate thread outside of initialize.
+        //Reference:  http://community.smartthings.com/t/unschedule-api-execution-time-too-long/11232/15
+    //schedule(now() + 30000, initSubscribe)
+    //if (canSchedule()) {
+    //    def initDelay=20
+    //    runIn(initDelay, initSubscribe)
+    //    runIn(initDelay+10, initSchedule)
+    //    LOGDEBUG ("Scheduled initSubscribe() in ${initDelay} seconds")
+    //} else {
+    //    msg = "ERROR: Cannot schedule initSubscribe(); Only 4 schedules can run at a time per SmartThings!"
+    //    LOGTRACE(msg)
+    //    sendNotification(msg)
+    //}
+    initSchedule()
+    initSubscribe()
+    LOGTRACE("Initialized")
+    sendNotificationEvent("${app.label.replace(" ","").toUpperCase()}: Settings activated")
+    state.lastMode = location.mode
+    state.lastTalkNow = settings.speechTalkNow
+//End initialize()
+}
+
+def initSubscribe(){
+    //NOTICE: Only call from initialize()!
+    LOGDEBUG ("BEGIN initSubscribe()")
     //Subscribe Motions
     if (motionDeviceGroup1) { subscribe(motionDeviceGroup1, "motion", onMotion1Event) }
     if (motionDeviceGroup2) { subscribe(motionDeviceGroup2, "motion", onMotion2Event) }
@@ -2214,20 +2240,20 @@ if (!(checkConfig())) {
     if (buttonDeviceGroup1) { subscribe(buttonDeviceGroup1, "button", onButton1Event) }
     if (buttonDeviceGroup2) { subscribe(buttonDeviceGroup2, "button", onButton2Event) }
     if (buttonDeviceGroup3) { subscribe(buttonDeviceGroup3, "button", onButton3Event) }
-    //Subscribe Schedule
-    if (timeSlotTime1) { unschedule(onSchedule1Event); schedule(timeSlotTime1, onSchedule1Event) }
-    if (timeSlotTime2) { unschedule(onSchedule2Event); schedule(timeSlotTime2, onSchedule2Event) }
-    if (timeSlotTime3) { unschedule(onSchedule3Event); schedule(timeSlotTime3, onSchedule3Event) }
     //Subscribe Mode
     if (modePhraseGroup1) { subscribe(location, onModeChangeEvent) }
-    state.lastMode = location.mode
-    //Clear TalkNow
-    state.lastTalkNow = ""
-	LOGTRACE("Initialized")
     
-//End initialize()
+    LOGDEBUG ("END initSubscribe()")
 }
 
+def initSchedule(){
+    LOGDEBUG ("BEGIN initSchedule()")
+    //Subscribe Schedule
+    if (timeSlotTime1) { schedule(timeSlotTime1, onSchedule1Event) }
+    if (timeSlotTime2) { schedule(timeSlotTime2, onSchedule2Event) }
+    if (timeSlotTime3) { schedule(timeSlotTime3, onSchedule3Event) }
+    LOGDEBUG ("END initSchedule()")
+}
 
 //BEGIN HANDLE TIME SCHEDULE
 def onSchedule1Event(){
@@ -2245,21 +2271,24 @@ def processScheduledEvent(index, eventtime, alloweddays){
 	calendar.setTimeZone(location.timeZone)
 	def today = calendar.get(Calendar.DAY_OF_WEEK)
     def todayStr = ""
+    def dayMatch = false
     switch (today) {
-		case Calendar.MONDAY: todayStr = "MONDAY"
-		case Calendar.TUESDAY:  todayStr = "TUESDAY"
-		case Calendar.WEDNESDAY:  todayStr = "WEDNESDAY"
-		case Calendar.THURSDAY:  todayStr = "THURSDAY"
-        case Calendar.FRIDAY:  todayStr = "FRIDAY"
-        case Calendar.SATURDAY:  todayStr = "SATURDAY"
-        case Calendar.SUNDAY:  todayStr = "SUNDAY"
+        case Calendar.MONDAY: todayStr = "MONDAY"; break
+		case Calendar.TUESDAY:  todayStr = "TUESDAY"; break
+		case Calendar.WEDNESDAY:  todayStr = "WEDNESDAY"; break
+		case Calendar.THURSDAY:  todayStr = "THURSDAY"; break
+        case Calendar.FRIDAY:  todayStr = "FRIDAY"; break
+        case Calendar.SATURDAY:  todayStr = "SATURDAY"; break
+        case Calendar.SUNDAY:  todayStr = "SUNDAY"; break
     }
+    //LOGDEBUG("today=${today}, MON=${Calendar.MONDAY},TUE=${Calendar.TUESDAY},WED=${Calendar.WEDNESDAY},THUR=${Calendar.THURSDAY},FRI=${Calendar.FRIDAY},SAT=${Calendar.SATURDAY},SUN=${Calendar.SUNDAY}")
     def timeNow = getTimeFromDateString(eventtime, true)
-    LOGDEBUG("(onScheduledEvent): ${timeNow}, ${index}, ${todayStr}, ${alloweddays}")
+    LOGDEBUG("(onScheduledEvent): ${timeNow}, ${index}, ${todayStr.toUpperCase()}, ${alloweddays.each(){return it.toUpperCase()}}")
     alloweddays.each(){
         if (todayStr.toUpperCase() == it.toUpperCase()) {
             LOGDEBUG("Time and day match schedule")
-            if (!(modeAllowed("motion",index))) { 
+            dayMatch = true
+            if (!(modeAllowed("timeSlot",index))) { 
                LOGDEBUG("Remain silent while in mode ${location.mode}")
                return
             }
@@ -2267,11 +2296,11 @@ def processScheduledEvent(index, eventtime, alloweddays){
             if (index == 2) { state.TalkPhrase = settings.timeSlotOnTime2; state.speechDevice = timeSlotSpeechDevice2 }
             if (index == 3) { state.TalkPhrase = settings.timeSlotOnTime3; state.speechDevice = timeSlotSpeechDevice3 }
             def customevent = [displayName: 'BigTalker:OnSchedule', name: 'OnSchedule', value: "${todayStr}@${timeNow}"]
+            state.TalkPhrase = processPhraseVariables(state.TalkPhrase, customevent)
             Talk(state.TalkPhrase, state.speechDevice, customevent)
-        } else {
-            LOGDEBUG("Time matches, but day does not match schedule; remaining silent")
         }
     }
+    if (!dayMatch) { LOGDEBUG("Time matches, but day does not match schedule; remaining silent") }
     state.TalkPhrase = null
     state.speechDevice = null
 }
@@ -2745,6 +2774,7 @@ def processPhraseVariables(phrase, evt){
     phrase = phrase.replace('%locationname%', location.name)
     phrase = phrase.replace('%lastmode%', state.lastMode)
     phrase = phrase.replace('%mode%', location.mode)
+    phrase = phrase.replace('%time%', getTimeFromCalendar(false,true))
     return phrase
 }
 
@@ -2779,11 +2809,11 @@ def Talk(phrase, customSpeechDevice, evt){
                         }
                     } else
                     {
-                        LOGDEBUG("mP | ${it.displayName} | (2)Nothing playing. Sending playTextAndResume()")
+                        LOGDEBUG("mP | ${it.displayName} | (2)Nothing playing. Sending playTextAndRestore()")
                         if (settings.speechVolume) { 
-                            it.playTextAndResume(phrase, settings.speechVolume) 
+                            it.playTextAndRestore(phrase, settings.speechVolume)
                         } else { 
-                            it.playTextAndResume(phrase, currentVolume) 
+                            it.playTextAndRestore(phrase, currentVolume)
                         }
                     }
                 } else {
@@ -3398,12 +3428,56 @@ def modeAllowed(devicetype,index) {
                 }
             }
         //End: case "button"
-            
+        case "timeSlot":
+            if (index == 1) {
+                //TimeSlot Group 1
+                if (settings.timeSlotModes1) {
+                    if (settings.timeSlotModes1.contains(location.mode)) {
+                        //Custom mode for this event is in use and we are in one of those modes
+                        return true
+                    } else {
+                        //Custom mode for this event is in use and we are not in one of those modes
+                        return false
+                    }
+                } else {
+                    return (settings.speechModesDefault.contains(location.mode)) //True if we are in an allowed Default mode, False if not
+                }
+            }
+            if (index == 2) {
+                //TimeSlot Group 2
+                if (settings.timeSlotModes2) {
+                    if (settings.timeSlotModes2.contains(location.mode)) {
+                        //Custom mode for this event is in use and we are in one of those modes
+                        return true
+                    } else {
+                        //Custom mode for this event is in use and we are not in one of those modes
+                        return false
+                    }
+                } else {
+                    return (settings.speechModesDefault.contains(location.mode)) //True if we are in an allowed Default mode, False if not
+                }
+            }
+            if (index == 3) {
+                //TimeSlot Group 3
+                if (settings.timeSlotModes3) {
+                    if (settings.timeSlotModes3.contains(location.mode)) {
+                        //Custom mode for this event is in use and we are in one of those modes
+                        return true
+                    } else {
+                        //Custom mode for this event is in use and we are not in one of those modes
+                        return false
+                    }
+                } else {
+                    return (settings.speechModesDefault.contains(location.mode)) //True if we are in an allowed Default mode, False if not
+                }
+            }
+        //End: case "timeSlot"
     } //End: switch (devicetype)
 }
 
 def getTimeFromDateString(inputtime, includeAmPm){
     //I couldn't find the way to do this in ST / Groovy, so I made my own function
+    //Obtains the time from a supplied specifically formatted date string (ie: from a preference of type "time")
     //LOGDEBUG "InputTime: ${inputtime}"
     def outputtime = inputtime
     def am_pm = "??"
@@ -3422,6 +3496,32 @@ def getTimeFromDateString(inputtime, includeAmPm){
     return outputtime
 }
 
+def getTimeFromCalendar(includeSeconds, includeAmPm){
+    //Obtains the current time:  HH:mm:ss am/pm
+    def calendar = Calendar.getInstance()
+	calendar.setTimeZone(location.timeZone)
+	def timeHH = calendar.get(Calendar.HOUR)
+    def timemm = calendar.get(Calendar.MINUTE)
+    def timess = calendar.get(Calendar.SECOND)
+    def timeampm = calendar.get(Calendar.AM_PM) ? "pm" : "am"
+    def timestring = "${timeHH}:${timemm}"
+    if (includeSeconds) { timestring += ":${timess}" }
+    if (includeAmPm) { timestring += " ${timeampm}" }
+    return timestring
+}
+
+//myRunIn from ST:Geko / Statusbits SmartAlarm app http://statusbits.github.io/smartalarm/
+private def myRunIn(delay_s, func) {
+    LOGDEBUG("myRunIn(${delay_s})")
+
+    if (delay_s > 0) {
+        def tms = now() + (delay_s * 1000)
+        def date = new Date(tms)
+        runOnce(date, func)
+        LOGDEBUG("'${func}' scheduled to run at ${date}")
+    }
+}
+
 def TalkQueue(phrase, customSpeechDevice, evt){
     //IN DEVELOPMENT
     // Already talking or just recently (within x seconds) started talking
@@ -3436,7 +3536,7 @@ def LOGTRACE(txt){
     log.trace("${app.label.replace(" ","").toUpperCase()}(${state.appversion}) || ${txt}")
 }
 def setAppVersion(){
-    state.appversion = "1.0.3-Beta5"
+    state.appversion = "1.0.3-Beta6"
 }
 
  /*
@@ -3482,4 +3582,11 @@ CHANGE LOG for 1.0.3-Beta4
   2/14/2015 - BugFix: When attempting to configure a "motion" event user receives the message "Error:You are not authorized to perform the requested operation" (Thanks: ST:chaaad614)
 CHANGE LOG for 1.0.3-Beta5
   2/14/2015 - Feature Modification: Modified configuration flow. Only show Sonos/Ubi selection on first run, then proceed to defaults and event selection.  Prior to install completion show button for "Configure". After install, show buttons for "Status", "Configure Defaults", "Configure Events", "Talk Now".
+CHANGE LOG for 1.0.3-Beta6
+  2/21/2015 - BugFix(attempt; needs testing): Under capability.musicPlayer Talk() calls playTextAndResume() even when it detects that nothing was playing before speaking. Changed to playTextAndRestore() when nothing is previously playing. Thanks ST Community:Kristopher "will play an audio stream after processing an event and sometimes not.  I assume its supposed to resume a stream if its already playing, but I definitely don't want it to start a new stream after its done talking."
+  2/21/2015 - BugFix: Fixed an issue where custom talk modes were not checked when using a scheduled Time event.
+  2/21/2015 - BugFix: Fixed an issue where current day of the week was not calculated properly for a scheduled Time event causing these events to speak on days of the week that were not desired.
+  2/21/2015 - BugFix: Fixed an issue where "Talk Now" would sometimes say the last spoken phrase upon entering the "Talk Now" page.
+  2/21/2015 - Feature Modification: Added phrase variable %time% which will return the current time.
  */
+
