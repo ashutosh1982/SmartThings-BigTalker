@@ -21,19 +21,21 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 #Installation
 1. Login at <a href=http://graph.api.smartthings.com>http://graph.api.smartthings.com</a>
-2. Go to "My SmartApps" section and click on the "+ New SmartApp" button on the right.
-3. On the "New SmartApp" page, Select the Tab "From Code" , Copy the BigTalker source code from GitHub and paste it into the IDE editor window.
-4. Click the "Create" button at the bottom.
-6. Click the blue "Save" button above the editor window.
-7. Click the "Publish" button next to it and select "For Me". You have now self-published your SmartApp.
+2. Go to "**My SmartApps**" section and click on the "**+ New SmartApp**" button on the right.
+3. On the "*New SmartApp*" page, Select the Tab "**From Code**" , Copy the BigTalker source code from GitHub (*BigTalker.groovy*) and paste it into the IDE editor window.
+4. Click the "**Create**" button at the bottom.
+6. Click the blue "**Save**" button above the editor window.
+7. Click the "**Publish**" button next to it and select "**For Me**". You have now self-published your SmartApp.
 8. Open SmartThings mobile app and go to the Dashboard.
-9. Tap on the round "+" button and navigate to "My Apps" section by swiping the menu ribbon all the way to the left.
-10. "BigTalker" app should be available in the list of SmartApps that appears below the menu ribbon. Tap it.
-11. Tap Configure to start setting up your talking events.  Setup as many or as few as you like, but try not to setup events that would fire rapidly back to back or they will conflict with each other.
+9. Tap on the round "**+**" button and navigate to "**My Apps**" section by swiping the menu ribbon all the way to the left.
+10. "**BigTalker**" app should be available in the list of SmartApps that appears below the menu ribbon. Tap it.
+  * Android users have reported having to logout of the SmartThings app, closing it, and logging back in before new apps will show up.
+11. Tap **Configure** to start setting up your talking events.  Setup as many or as few as you like, but try not to setup events that would fire rapidly back to back or they will conflict with each other.
+
 # More Details
 Have you ever wanted a talking house? Now you can! With my Big Talker SmartApp ( http://github.com/rayzurbock/SmartThings-BigTalker )
 
-When SmartThings is paired with a compatible audio device (such as a Sonos or VLC Thing ( http://community.smartthings.com/t/vlc-thing-a-poor-mans-sonos/5433 )) and my Big Talker SmartApp, your house can say what you want it to say when events occur.
+When SmartThings is paired with a compatible audio device (such as a Sonos, Ubi or VLC Thing ( http://community.smartthings.com/t/vlc-thing-a-poor-mans-sonos/5433 )) and Big Talker SmartApp, your house can say what you want it to say when events occur.
 
 Currently supported events:
 
@@ -48,6 +50,7 @@ Currently supported events:
 * Acceleration, Active/Inactive
 * Water, Wet/Dry
 * Smoke, Detect/Clear/Test
+* Button,  Press
 
 Each supported event supports 3 different groups so that you can alter your spoken phrases based on which group your selection of devices is configured in.
 
@@ -67,7 +70,7 @@ I have a virtual switch that turns on/off all of my Christmas tree's and interio
 
 Keep in mind, if you configure highly active or too many devices, it may get annoying!! We had a family gathering tonight and the kids kept going in/out the back door to play in the yard. "Back Door has been opened, Back Door has been closed, Back Door has been opened, you get the idea." I wouldn't configure chatty motion sensors either, but that's up to you.
 
-Have Fun!
+***Have Fun!***
 
 <hr>
 # Revision History
