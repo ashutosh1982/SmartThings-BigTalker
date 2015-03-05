@@ -1,5 +1,5 @@
 /**
- *  BIG TALKER -- Version 1.0.3-Beta6 -- A SmartApp for SmartThings Home Automation System
+ *  BIG TALKER -- Version 1.1.0 -- A SmartApp for SmartThings Home Automation System
  *  Copyright 2014 - rayzur@rayzurbock.com - Brian S. Lowrance
  *  For the latest version, development and test releases visit http://www.github.com/rayzurbock
  *
@@ -20,11 +20,10 @@
  *-------------------------------------------------------------------------------------------------------------------
  *  If modifying this project, please keep the above header in tact.
  *
- *  Feature Requests and Change Log have been moved to the bottom of the source.
  */
  
 definition(
-    name: "Big Talker Dev",
+    name: "Big Talker",
     namespace: "rayzurbock",
     author: "rayzur@rayzurbock.com",
     description: "Let's talk about mode changes, switches, motions, and so on.",
@@ -48,7 +47,7 @@ preferences {
     page(name: "pageConfigContact")
     page(name: "pageConfigMode")
     page(name: "pageConfigThermostat")
-	page(name: "pageConfigAcceleration")
+    page(name: "pageConfigAcceleration")
     page(name: "pageConfigWater")
     page(name: "pageConfigSmoke")
     page(name: "pageConfigButton")
@@ -1626,7 +1625,7 @@ def pageConfigureDefaults(){
             input "defaultEndTime", "time", title: "Don't talk after: ", required: (!(settings.defaultStartTime == null)), refreshAfterSelection: true
         }
         section(){
-            paragraph "\nClick Next (top right) to continue configuration...\n"
+            input "debugmode", "bool", title: "Enable debug logging", required: true, defaultValue: false
         }
     }
 }
@@ -2528,6 +2527,7 @@ def processModeChangeEvent(index, evt){
     //Are we in an allowed time period?
     if (!(timeAllowed("mode",index))) {
         LOGDEBUG("Remain silent in current time period")
+        state.lastMode = location.mode
         return
     }
     if (settings.modePhraseGroup1.contains(location.mode)){
@@ -3530,63 +3530,12 @@ def TalkQueue(phrase, customSpeechDevice, evt){
 }
 
 def LOGDEBUG(txt){
-    log.debug("${app.label.replace(" ","").toUpperCase()}(${state.appversion}) || ${txt}")
+    if (settings.debugmode) { log.debug("${app.label.replace(" ","").toUpperCase()}(${state.appversion}) || ${txt}") }
 }
 def LOGTRACE(txt){
     log.trace("${app.label.replace(" ","").toUpperCase()}(${state.appversion}) || ${txt}")
 }
 def setAppVersion(){
-    state.appversion = "1.0.3-Beta6"
+    state.appversion = "1.1.0"
 }
-
- /*
-FEATURE REQUESTS:
-  - Multiple home mode change groups for various configurations (To prevent overlap, may need to exclude mode selections from being used in other groups; exclusions can be used in all groups)
-  - AND/OR logic for devices within a device group (require all devices in a group to be in a state before talking or talk on individual device state changes)
-
-CHANGE LOG for 1.0.3-Alpha1
-   12/26/2014 - Acceleration (active/inactive) event added and tested
-   12/26/2014 - Water (wet/dry) event added
-   12/26/2014 - Smoke (detected/clear/tested) event added
-   12/26/2014 - Button (press) event added, to be tested...
-CHANGE LOG for 1.0.3-Alpha2
-   12/27/2014 - Adjusted some debug/trace log info
-   12/27/2014 - Added default "talk while in mode(s)" with custom mode overrides for each event group.
-   12/27/2014 - Status page: add defaults, cleanup look
-CHANGE LOG for 1.0.3-Alpha3   
-   12/27/2014 - Added Volume Change (supported for Sonos, VLC-Thing, not supported for Ubi due to lack of support in it's device type)
-CHANGE LOG for 1.0.3-Alpha4
-   12/27/2014 - BugFix: Corrected small bug on status page
-CHANGE LOG for 1.0.3-Alpha5
-   1/2/2015 - BugFix: VLCThing reporting "stopped" instead of "disconnected" therefore it was calling "playTextAndResume" and cutting off phrases.  Adjusted to playText if no trackdata found.
-   1/4/2015 - BugFix: Switch Group 3 was not working.  onSwitch3Event() function missing; Added.  Thanks GitHub @roblandry (Issue #5).
-   1/4/2015 - Feature: Mode change exclusion: Remain silent when changed to a configured mode, when coming from an excluded mode.  Thanks for the request SmartThingsCommunity:Greg.
-CHANGE LOG for 1.0.3-Alpha6
-   1/4/2015 - BugFix: Mode change exclusion contained a logic processing bug, corrected.
-CHANGE LOG for 1.0.3-Alpha7
-   1/6/2015 - BugFix: If a user starts to configure the app and backs out before completing configuration, multiple instances may be created without an Uninstall button. This release ensures the Uninstall version is always available.
-CHANGE LOG for 1.0.3-Beta1
-   1/4/2015 - Feature: Toggle support for either capability.musicPlayer(Sonos/VLCThing) or capability.speechSynthesis(Ubi/VLCThing).  Note: Only one type or the other is currently configurable in the app at a time.  Install the app twice to support both modes.
-   1/4/2015 - Configuration flow change (to better support the choice of musicPlayer / speechSynthesis)
-   1/6/2015 - BugFix: Mode change announcement may announce previous mode incorrectly.  Resolved.
-   2/6/2015 - Feature: Optional: Default Allowed Talk Time, with per event group override. (Thanks ST Community: Greg for the idea)
-   2/6/2015 - Feature: Added Talk Now feature (once the app is properly setup/configured, it will show up on the main page under Status and Configure).
-   2/6/2015 - Feature Modification: Default text is shown in Group 1 of each device type as an example; if the user deletes the text and saves, it reappears the next time they edit the event type. This modification only fills the default text if the speech text is blank AND the device list is empty.  (Thanks for the feedback ST Community: Greg)
-CHANGE LOG for 1.0.3-Beta2
-   2/8/2015 - Feature: Added scheduled event based on time of day and day(s) of the week.  Only allowed 3 as ST apps are only allowed 4 schedules at a time, so I'm reserving 1 for future use (Thanks ST Community: Greg for the feature request)
-   2/8/2015 - Feature Modification: Modified buttons to configure events to state "Tap to modify" if they are configured already and "Tap to configure" if they have not been configured.
-   2/8/2015 - BugFix: Hopefully fixed a bug where upgrading from versions before 1.0.3-Beta1 speechDevice selections may show up as a text field; toggling Sonos/Ubi support resolved, so added code to try to prevent the issue to start with (Thanks ST Community: Greg for the report)
-CHANGE LOG for 1.0.3-Beta3
-   2/8/2015 - Feature Modification: Added time scheduled events to the status page
-CHANGE LOG for 1.0.3-Beta4
-  2/14/2015 - BugFix: When attempting to configure a "motion" event user receives the message "Error:You are not authorized to perform the requested operation" (Thanks: ST:chaaad614)
-CHANGE LOG for 1.0.3-Beta5
-  2/14/2015 - Feature Modification: Modified configuration flow. Only show Sonos/Ubi selection on first run, then proceed to defaults and event selection.  Prior to install completion show button for "Configure". After install, show buttons for "Status", "Configure Defaults", "Configure Events", "Talk Now".
-CHANGE LOG for 1.0.3-Beta6
-  2/21/2015 - BugFix(attempt; needs testing): Under capability.musicPlayer Talk() calls playTextAndResume() even when it detects that nothing was playing before speaking. Changed to playTextAndRestore() when nothing is previously playing. Thanks ST Community:Kristopher "will play an audio stream after processing an event and sometimes not.  I assume its supposed to resume a stream if its already playing, but I definitely don't want it to start a new stream after its done talking."
-  2/21/2015 - BugFix: Fixed an issue where custom talk modes were not checked when using a scheduled Time event.
-  2/21/2015 - BugFix: Fixed an issue where current day of the week was not calculated properly for a scheduled Time event causing these events to speak on days of the week that were not desired.
-  2/21/2015 - BugFix: Fixed an issue where "Talk Now" would sometimes say the last spoken phrase upon entering the "Talk Now" page.
-  2/21/2015 - Feature Modification: Added phrase variable %time% which will return the current time.
- */
 
