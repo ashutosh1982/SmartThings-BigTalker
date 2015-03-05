@@ -1,7 +1,7 @@
 #Description
 Big Talker is a SmartApp for SmartThings that can make your house talk depending on various triggered events. <br />
 Pair with any SmartThings compatible audio device such as Sonos, VLC Thing on your computer or Raspberry Pi!  See <b>More Details</b> section below for more features.<br />
-Version: 1.0.3-Beta6 <br />
+Version: 1.1.0 <br />
 
 #Support the project
  This SmartApp is free. Donations to support development efforts are accepted via:
@@ -74,53 +74,33 @@ Have Fun!
 *  12/13/2014 - 1.0.0 - Initial Release
 *  12/17/2014 - 1.0.1 - Sonos Support corrected. Resume playback after speaking (not supported for VLC-Thing until the Device Type supports it), Corrected custom speech device save for Switch events, general cleanup.  More event support to come in new releases soon. Special thanks to SmartThings community member Greg for help with testing Sonos functionality and making this release possible.
 *  12/26/2014 - 1.0.2 - Corrected bug where Sonos would show up to be selected as a default speech device, but not as a custom speech device for each device/event group.
-*  12/26/2014 - 1.0.3-Alpha1
-  * New sensor event handlers
-    * Acceleration (active/inactive) event added and tested
-    * Water (wet/dry) event added, to be tested..., Need someone to test.
-    * Smoke (detected/clear/tested) event added, to be tested (without burning a house down, please!)..., Need someone to test.
+*  3/4/2015 - 1.1.0
+  * Feature: New sensor event handlers
+    * Acceleration (active/inactive) event
+    * Water (wet/dry) event added
+    * Smoke (detected/clear/tested) event 
     * Button (press) event added, to be tested..., Need someone to test.
-*  12/27/2014 - 1.0.3-Alpha2
-  * Water tested, thanks SmartThingsCommunity:Greg 
-  * Smoke tested, thanks SmartThingsCommunity:Greg 
-  * Adjusted some debug/trace log info
-  * Added default "talk while in mode(s)" with custom mode overrides for each event group.
-  * Status page: add defaults, cleanup look
-*  12/27/2014 - 1.0.3-Alpha3
-  *  Added Volume Change (supported for Sonos, VLC-Thing, not supported for Ubi due to lack of support in it's device type)
-*  12/27/2014 - 1.0.3-Alpha4
-  *  Corrected small bug on status page that was introduced in 1.0.3-Alpha3
-*  1/4/2015 - 1.0.3-Alpha5
-  *  BugFix: VLCThing reporting "stopped" instead of "disconnected" therefore it was calling "playTextAndResume" and cutting off phrases.  Adjusted to playText if no trackdata found.
-  *  BugFix: Switch Group 3 was not working.  onSwitch3Event() function missing; Added.  Thanks GitHub @roblandry (Issue #5).
-  *  Feature: Mode change exclusion: Remain silent when changed to a configured mode, when coming from an excluded mode.  Thanks for the request SmartThingsCommunity:Greg.
-* 1/4/2015 - 1.0.3-Alpha6
-  * BugFix: Mode change exclusion contained a logic processing bug, corrected.
-* 1/6/2015 - 1.0.3-Alpha7
-  * BugFix: Ensure Uninstall button is always on the "Configure" page, even for partially installed instances
-* 1/6/2015 - 1.0.3-Alpha8
-  * BugFix: Mode change announcement may announce previous mode incorrectly.  Resolved.
-* 2/7/2015 - 1.0.3-Beta1
-  * Moving from Alpha (development) to Beta (testing)
-  * 1/4/2015 - Feature: Toggle support for either capability.musicPlayer(Sonos/VLCThing) or capability.speechSynthesis(Ubi/VLCThing).  Note: Only one type or the other is currently configurable in the app at a time.
+  * Feature: Mode change exclusion: Remain silent when changed to a configured mode, when coming from an excluded mode.  Thanks for the request SmartThingsCommunity:Greg.
+  * Feature: Added default "talk while in mode(s)" with custom mode overrides for each event group.
+  * Feature: Added Volume Change (supported for Sonos, VLC-Thing, not supported for Ubi due to lack of support in it's device type)
+  * Feature: Toggle support for either capability.musicPlayer(Sonos/VLCThing) or capability.speechSynthesis(Ubi/VLCThing).  Note: Only one type or the other is currently configurable in the app at a time.
     * Install the app twice to support both modes.
-  * 1/4/2015 - Configuration flow change (to better support the choice of musicPlayer / speechSynthesis)
-  * 1/6/2015 - BugFix: Mode change announcement may announce previous mode incorrectly.  Resolved.
-  * 2/6/2015 - Feature: Optional: Default Allowed Talk Time, with per event group override. (Thanks ST Community: Greg for the idea)
-  * 2/6/2015 - Feature: Added Talk Now feature (once the app is properly setup/configured, it will show up on the main page under Status and Configure).
-  * 2/6/2015 - Feature Modification: Default text is shown in Group 1 of each device type as an example; if the user deletes the text and saves, it reappears the next time they edit the event type. This modification only fills the default text if the speech text is blank AND the device list is empty.  (Thanks for the feedback ST Community: Greg)
-* 2/8/2015 - 1.0.3-Beta2
-  * Feature: Added scheduled event based on time of day and day(s) of the week.  Only allowed 3 as ST apps are only allowed 4 schedules at a time, so I'm reserving 1 for future use (Thanks ST Community: Greg for the feature request)
-  * BugFix: Hopefully fixed a bug where upgrading from versions before 1.0.3-Beta1 speechDevice selections may show up as a text field; toggling Sonos/Ubi support resolved, so added code to try to prevent the issue to start with (Thanks ST Community: Greg for the report)
-* 2/8/2015 - 1.0.3-Beta3
+  * Feature: Optional: Default Allowed Talk Time, with per event group override. (Thanks ST Community: Greg for the idea)
+  * Feature: Added Talk Now feature (once the app is properly setup/configured, it will show up on the main page under Status and Configure).
+  * Feature: Added scheduled event based on time of day and day(s) of the week.  Only allowed 3 as ST apps are only allowed 4 schedules at a time, so I'm reserving 1 for future/internal use (Thanks ST Community: Greg for the feature request)
+  * Feature Modification: Adjusted some debug/trace log info
+  * Feature Modification: Status page: add defaults, cleanup look
+  * Feature Modification: Configuration flow change (to better support the choice of musicPlayer / speechSynthesis)
+  * Feature Modification: Default text is shown in Group 1 of each device type as an example; if the user deletes the text and saves, it reappears the next time they edit the event type. This modification only fills the default text if the speech text is blank AND the device list is empty.  (Thanks for the feedback ST Community: Greg)
   * Feature Modification: Added time scheduled events to the status page
-* 2/14/2015 - 1.0.3-Beta4
+  * Feature Modification: Added phrase variable %time% which will return the current time.
+  * BugFix: VLCThing reporting "stopped" instead of "disconnected" therefore it was calling "playTextAndResume" and cutting off phrases.  Adjusted to playText if no trackdata found.
+  * BugFix: Switch Group 3 was not working.  onSwitch3Event() function missing; Added.  Thanks GitHub @roblandry (Issue #5).
+  * BugFix: Ensure Uninstall button is always on the "Configure" page, even for partially installed instances
+  * BugFix: Mode change announcement may announce previous mode incorrectly.  Resolved.
+  * BugFix: Hopefully fixed a bug where upgrading from versions before 1.0.3-Beta1 speechDevice selections may show up as a text field; toggling Sonos/Ubi support resolved, so added code to try to prevent the issue to start with (Thanks ST Community: Greg for the report)
   * BugFix: When attempting to configure a "motion" event user receives the message "Error:You are not authorized to perform the requested operation" (Thanks: ST:chaaad614)
-* 2/14/2015 - 1.0.3-Beta5
-  * Feature Modification: Modified configuration flow. Only show Sonos/Ubi selection on first run, then proceed to defaults and event selection.  Prior to install completion show button for "Configure". After install, show buttons for "Status", "Configure Defaults", "Configure Events", "Talk Now".
-* CHANGE LOG for 1.0.3-Beta6
-  * 2/21/2015 - BugFix(attempt; needs testing): Under capability.musicPlayer Talk() calls playTextAndResume() even when it detects that nothing was playing before speaking. Changed to playTextAndRestore() when nothing is previously playing. Thanks ST Community:Kristopher "will play an audio stream after processing an event and sometimes not.  I assume its supposed to resume a stream if its already playing, but I definitely don't want it to start a new stream after its done talking."
-  * 2/21/2015 - BugFix: Fixed an issue where custom talk modes were not checked when using a scheduled Time event.
-  * 2/21/2015 - BugFix: Fixed an issue where current day of the week was not calculated properly for a scheduled Time event causing these events to speak on days of the week that were not desired.
-  * 2/21/2015 - BugFix: Fixed an issue where "Talk Now" would sometimes say the last spoken phrase upon entering the "Talk Now" page.
-  * 2/21/2015 - Feature Modification: Added phrase variable %time% which will return the current time.
+  * BugFix(attempt; needs testing): Under capability.musicPlayer Talk() calls playTextAndResume() even when it detects that nothing was playing before speaking. Changed to playTextAndRestore() when nothing is previously playing. Thanks for the report ST Community:Kristopher
+  * BugFix: Fixed an issue where custom talk modes were not checked when using a scheduled Time event.
+  * BugFix: Fixed an issue where current day of the week was not calculated properly for a scheduled Time event causing these events to speak on days of the week that were not desired.
+  * BugFix: Fixed an issue where "Talk Now" would sometimes say the last spoken phrase upon entering the "Talk Now" page.
